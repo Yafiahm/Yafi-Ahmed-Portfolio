@@ -102,11 +102,10 @@
       display: block;
       pointer-events: none;
       z-index: 0;
-      will-change: transform, opacity;
+      will-change: transform;
       transform: translateZ(0);
       contain: strict;
       image-rendering: -webkit-optimize-contrast;
-      transition: opacity 0.35s ease-out;
     }
 
     /* Ambient atmospheric background glows */
@@ -719,54 +718,6 @@
     @keyframes heroMarqueeFlow {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
-    }
-
-    /* Floating Replay Intro Button */
-    .hero-replay-btn {
-      position: absolute;
-      bottom: 4.8rem;
-      right: 2.5rem;
-      z-index: 15;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1.05rem;
-      background: rgba(13, 10, 25, 0.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      border-radius: 9999px;
-      color: #e2e8f0;
-      font-size: 0.76rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(168, 85, 247, 0.2);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hero-replay-btn:hover {
-      background: rgba(147, 51, 234, 0.3);
-      border-color: rgba(225, 29, 72, 0.65);
-      color: #ffffff;
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 8px 25px rgba(168, 85, 247, 0.45), 0 0 20px rgba(225, 29, 72, 0.35);
-    }
-    .hero-replay-btn .replay-icon {
-      width: 14px;
-      height: 14px;
-      transition: transform 0.5s ease;
-    }
-    .hero-replay-btn:hover .replay-icon {
-      transform: rotate(-180deg);
-    }
-    @media (max-width: 768px) {
-      .hero-replay-btn {
-        bottom: 5.5rem;
-        right: 1rem;
-        font-size: 0.7rem;
-        padding: 0.4rem 0.8rem;
-      }
     }
 
     /* =========================================
@@ -3678,15 +3629,6 @@
         <span class="ticker-sep">//</span>
       </div>
     </div>
-
-    <!-- REPLAY CINEMATIC INTRO BUTTON -->
-    <button class="hero-replay-btn" id="btn-replay-intro" title="Replay Cinematic Intro" aria-label="Replay Cinematic Intro">
-      <svg class="replay-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-        <path d="M3 3v5h5"></path>
-      </svg>
-      <span>Replay Intro</span>
-    </button>
   </section>
 
   <!-- SECTION: ABOUT ME (UNBOXED EDITORIAL DIRECT ON CONTINUOUS CANVAS) -->
@@ -5263,7 +5205,7 @@
   <script>
     (function () {
       // =======================================================
-      // CINEMATIC 3D INTRO ENGINE (60 FPS PLAYBACK + 3D PARALLAX)
+      // ULTRA-PERFORMANCE 3D SCROLL-SCRUBBING ENGINE (300 FRAMES)
       // =======================================================
       const TOTAL_FRAMES = 300;
       const baseCanvas = document.getElementById('animation-canvas');
@@ -5272,11 +5214,8 @@
       const frames = new Array(TOTAL_FRAMES);
       const loadingStates = new Uint8Array(TOTAL_FRAMES); // 0=unloaded, 1=loading, 2=loaded
       let lastRenderedIndex = -1;
-      let currentFrame = 0;
-      let isIntroPlaying = false;
-      let introHasPlayed = false;
 
-      // Handle HiDPI Canvas Resizing with capped DPR for maximum frame rate
+      // Handle HiDPI Canvas Resizing with capped DPR for 60-120 FPS fluid scrubbing
       function resizeCanvas() {
         const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
         const cw = window.innerWidth;
@@ -5297,39 +5236,22 @@
         return `frames/frame-${num}.jpg`;
       }
 
-      function loadSingleFrame(index, onLoaded) {
-        if (index < 0 || index >= TOTAL_FRAMES) return;
-        if (loadingStates[index] === 2) {
-          if (onLoaded) onLoaded(frames[index]);
-          return;
-        }
-        if (loadingStates[index] === 1) return;
-        loadingStates[index] = 1;
-
-        const img = new Image();
-        img.decoding = 'async';
-        img.src = getFramePath(index);
-        img.onload = () => {
-          frames[index] = img;
-          loadingStates[index] = 2;
-          if (onLoaded) onLoaded(img);
-        };
-        img.onerror = () => {
-          loadingStates[index] = 0;
-        };
-      }
-
-      // Fast nearest-neighbor frame lookup
+      // Fast nearest-neighbor frame lookup (O(1) search)
       function getFrame(index) {
         const frame = frames[index];
         if (frame && frame.complete && frame.naturalWidth !== 0) return frame;
 
-        // Search concentric closest neighbors
-        for (let offset = 1; offset < 20; offset++) {
+        // Concentric search up to 8 frames
+        for (let offset = 1; offset <= 8; offset++) {
           const prev = frames[index - offset];
           if (prev && prev.complete && prev.naturalWidth !== 0) return prev;
           const next = frames[index + offset];
           if (next && next.complete && next.naturalWidth !== 0) return next;
+        }
+
+        // Fallback to last successfully rendered frame or frame 0
+        if (lastRenderedIndex >= 0 && frames[lastRenderedIndex] && frames[lastRenderedIndex].complete) {
+          return frames[lastRenderedIndex];
         }
         return (frames[0] && frames[0].complete) ? frames[0] : null;
       }
@@ -5353,7 +5275,6 @@
         const drawY = TOP_GAP;
 
         baseCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        baseCtx.clearRect(0, 0, cw, ch);
 
         // Seamless Edge-to-Edge Ambient Light Bleed (Eliminates Side Black Bars on Wide Displays)
         if (cw > drawW) {
@@ -5379,165 +5300,96 @@
       }
 
       // =======================================================
-      // SMOOTH PROGRESSIVE STREAMING PIPELINE (ZERO NETWORK CHOKE)
+      // HIGH-PERFORMANCE CONCURRENT FRAME STREAMER (MAX 4 ACTIVE)
       // =======================================================
-      let streamQueue = [];
-      let activeRequests = 0;
-      const MAX_CONCURRENT = 3;
+      const highPriorityQueue = [];
+      const lowPriorityQueue = [];
+      let activeStreams = 0;
+      const MAX_STREAMS = 4;
 
       function pumpQueue() {
-        while (activeRequests < MAX_CONCURRENT && streamQueue.length > 0) {
-          const nextIdx = streamQueue.shift();
-          if (loadingStates[nextIdx] === 0) {
-            activeRequests++;
-            loadSingleFrame(nextIdx, () => {
-              activeRequests--;
+        while (activeStreams < MAX_STREAMS && (highPriorityQueue.length > 0 || lowPriorityQueue.length > 0)) {
+          const idx = highPriorityQueue.length > 0 ? highPriorityQueue.shift() : lowPriorityQueue.shift();
+          if (loadingStates[idx] === 0) {
+            loadingStates[idx] = 1;
+            activeStreams++;
+
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = getFramePath(idx);
+            img.onload = () => {
+              frames[idx] = img;
+              loadingStates[idx] = 2;
+              activeStreams--;
+              if (lastRenderedIndex === -1 && idx === 0) {
+                drawFrame(0);
+              } else if (lastRenderedIndex >= 0 && Math.abs(lastRenderedIndex - idx) <= 1) {
+                drawFrame(lastRenderedIndex);
+              }
               pumpQueue();
-            });
+            };
+            img.onerror = () => {
+              loadingStates[idx] = 0;
+              activeStreams--;
+              pumpQueue();
+            };
           }
         }
       }
 
-      function queueFramesAhead(startIndex, count) {
-        const limit = Math.min(TOTAL_FRAMES - 1, startIndex + count);
-        for (let i = startIndex; i <= limit; i++) {
-          if (loadingStates[i] === 0 && !streamQueue.includes(i)) {
-            streamQueue.push(i);
+      function requestFrame(idx, isHigh = false) {
+        if (idx < 0 || idx >= TOTAL_FRAMES) return;
+        if (loadingStates[idx] !== 0) return;
+
+        if (isHigh) {
+          if (!highPriorityQueue.includes(idx)) {
+            highPriorityQueue.unshift(idx);
+          }
+        } else {
+          if (!lowPriorityQueue.includes(idx) && !highPriorityQueue.includes(idx)) {
+            lowPriorityQueue.push(idx);
           }
         }
         pumpQueue();
       }
 
-      // 1. Instantly load initial frame 0
-      loadSingleFrame(0, () => {
-        drawFrame(0);
-        // Pre-buffer next 25 frames for seamless intro start
-        queueFramesAhead(1, 25);
-        // Begin cinematic intro playback automatically after brief settling delay
-        setTimeout(() => {
-          if (!introHasPlayed) {
-            startCinematicIntro();
-          }
-        }, 300);
-      });
-
-      // 2. Pre-cache final confident frame
-      loadSingleFrame(TOTAL_FRAMES - 1);
-
-      // =======================================================
-      // 60 FPS CINEMATIC INTRO PLAYBACK ENGINE
-      // =======================================================
-      let lastFrameTime = 0;
-      const TARGET_FPS = 46; // Silky ~3.2 second fluid video motion
-      const frameDurationMs = 1000 / TARGET_FPS;
-
-      function startCinematicIntro() {
-        isIntroPlaying = true;
-        currentFrame = 0;
-        lastFrameTime = 0;
-        requestAnimationFrame(introPlayStep);
+      // Prioritize 14 frames immediately surrounding the active scroll position
+      function prioritizeAround(currentIndex) {
+        requestFrame(currentIndex, true);
+        for (let i = 1; i <= 8; i++) {
+          requestFrame(currentIndex + i, true);
+          requestFrame(currentIndex - i, true);
+        }
       }
 
-      function introPlayStep(timestamp) {
-        if (!isIntroPlaying) return;
+      // 1. Instantly request Frame 0
+      requestFrame(0, true);
 
-        // If user scrolled past hero, pause intro playback
-        if ((window.pageYOffset || 0) > window.innerHeight * 0.9) {
-          isIntroPlaying = false;
-          return;
-        }
+      // 2. Pre-cache Keyframes at interval 4 across timeline (75 keyframes = ~2.8MB total)
+      const KEYFRAME_INTERVAL = 4;
+      for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
+        requestFrame(i, false);
+      }
+      requestFrame(TOTAL_FRAMES - 1, false);
 
-        if (!lastFrameTime) lastFrameTime = timestamp;
-        const elapsed = timestamp - lastFrameTime;
-
-        if (elapsed >= frameDurationMs) {
-          lastFrameTime = timestamp - (elapsed % frameDurationMs);
-
-          const nextIdx = currentFrame + 1;
-          if (nextIdx < TOTAL_FRAMES) {
-            if (loadingStates[nextIdx] === 2) {
-              currentFrame = nextIdx;
-              drawFrame(currentFrame);
-            } else {
-              loadSingleFrame(nextIdx, () => {
-                if (isIntroPlaying && currentFrame === nextIdx - 1) {
-                  currentFrame = nextIdx;
-                  drawFrame(currentFrame);
-                }
-              });
-            }
-
-            // Stream ahead
-            queueFramesAhead(currentFrame + 1, 20);
-          } else {
-            // Reached final confident hero pose (smiling with glasses)
-            isIntroPlaying = false;
-            introHasPlayed = true;
-            currentFrame = TOTAL_FRAMES - 1;
-            drawFrame(currentFrame);
-            return;
+      // 3. Incrementally load all remaining intermediate frames on idle / background
+      setTimeout(() => {
+        for (let i = 0; i < TOTAL_FRAMES; i++) {
+          if (loadingStates[i] === 0) {
+            requestFrame(i, false);
           }
         }
-
-        requestAnimationFrame(introPlayStep);
-      }
-
-      function replayCinematicIntro() {
-        currentFrame = 0;
-        drawFrame(0);
-        queueFramesAhead(1, 40);
-        isIntroPlaying = true;
-        lastFrameTime = 0;
-        requestAnimationFrame(introPlayStep);
-      }
-
-      // Replay Button Listener
-      const btnReplayIntro = document.getElementById('btn-replay-intro');
-      if (btnReplayIntro) {
-        btnReplayIntro.addEventListener('click', (e) => {
-          e.stopPropagation();
-          replayCinematicIntro();
-        });
-      }
+      }, 1000);
 
       // =======================================================
-      // 3D HOLOGRAPHIC MOUSE PARALLAX (HERO STAGE)
+      // SMOOTH SCROLL SCRUBBING ORCHESTRATION
       // =======================================================
-      const stageHero = document.getElementById('stage-hero');
-      let mouseTicking = false;
-      if (stageHero && window.matchMedia('(pointer: fine)').matches) {
-        stageHero.addEventListener('mousemove', (e) => {
-          if ((window.pageYOffset || 0) > window.innerHeight * 0.6) return;
-          if (!mouseTicking) {
-            requestAnimationFrame(() => {
-              const rect = stageHero.getBoundingClientRect();
-              const normX = (e.clientX - rect.left) / rect.width - 0.5;
-              const normY = (e.clientY - rect.top) / rect.height - 0.5;
-              const tiltX = -normY * 4.5;
-              const tiltY = normX * 5.5;
-              const moveX = normX * 14;
-              const moveY = normY * 10;
+      let targetProgress = 0;
+      let currentProgress = 0;
+      const LERP_FACTOR = 0.55; // Snappy, fluid deceleration
 
-              if (baseCanvas && baseCanvas.style.visibility !== 'hidden') {
-                baseCanvas.style.transform = `perspective(1000px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) translate3d(${moveX.toFixed(1)}px, ${moveY.toFixed(1)}px, 0)`;
-              }
-              mouseTicking = false;
-            });
-            mouseTicking = true;
-          }
-        }, { passive: true });
-
-        stageHero.addEventListener('mouseleave', () => {
-          if (baseCanvas) {
-            baseCanvas.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 0)';
-          }
-        });
-      }
-
-      // =======================================================
-      // ZERO-LAG SCROLL ORCHESTRATION & CANVAS DORMANCY
-      // =======================================================
       // Stage Elements
+      const stageHero = document.getElementById('stage-hero');
       const stageAbout = document.getElementById('stage-about');
       const stageTechStack = document.getElementById('stage-techstack');
       const stageProjects = document.getElementById('stage-projects');
@@ -5556,6 +5408,28 @@
       const navProjects = document.getElementById('nav-link-projects');
       const navOfferings = document.getElementById('nav-link-offerings');
       const navContact = document.getElementById('nav-link-contact');
+
+      // Scroll Cues
+      const cueScrollHero = document.getElementById('cue-scroll-hero');
+      const cueScrollAbout = document.getElementById('cue-scroll-about');
+      const cueScrollTechStack = document.getElementById('cue-scroll-techstack');
+      const cueScrollProjects = document.getElementById('cue-scroll-projects');
+      const cueScrollLearning = document.getElementById('cue-scroll-learning');
+      const cueScrollMilestones = document.getElementById('cue-scroll-milestones');
+      const cueScrollOfferings = document.getElementById('cue-scroll-offerings');
+      const cueScrollApproach = document.getElementById('cue-scroll-approach');
+      const cueScrollFaq = document.getElementById('cue-scroll-faq');
+
+      function updateScrollProgress(prog) {
+        if (typeof prog === 'number') {
+          targetProgress = Math.min(Math.max(prog, 0), 1);
+        } else {
+          const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          targetProgress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
+        }
+      }
+      window.updateScrollProgress = updateScrollProgress;
 
       let cachedSectionTops = { about: 1000, techStack: 2000, projects: 3000, offerings: 5000, contact: 8000 };
       function updateCachedSectionTops() {
@@ -5629,53 +5503,42 @@
         }
       });
 
-      // Throttled high-performance scroll handler
-      let scrollRafId = 0;
-      function handleScroll() {
-        if (scrollRafId) return;
-        scrollRafId = requestAnimationFrame(() => {
-          scrollRafId = 0;
-          const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-          const vh = window.innerHeight;
+      window.addEventListener('scroll', () => {
+        updateScrollProgress();
+        updateNavActiveTab();
+      }, { passive: true });
+      updateScrollProgress();
+      updateNavActiveTab();
 
-          // Smoothly fade & scale canvas on scroll, and disable rendering when past Hero
-          if (baseCanvas) {
-            if (scrollY > vh * 0.95) {
-              // Completely dormant when past hero: 0 CPU / 0 GPU cost!
-              if (baseCanvas.style.visibility !== 'hidden') {
-                baseCanvas.style.visibility = 'hidden';
-                baseCanvas.style.opacity = '0';
-              }
-            } else {
-              // Smoothly fade in when returning to Hero
-              if (baseCanvas.style.visibility === 'hidden') {
-                baseCanvas.style.visibility = 'visible';
-                if (!introHasPlayed && !isIntroPlaying) {
-                  startCinematicIntro();
-                } else if (!isIntroPlaying) {
-                  drawFrame(currentFrame);
-                }
-              }
-              const opacity = Math.max(0, 1 - (scrollY / (vh * 0.8)));
-              baseCanvas.style.opacity = opacity.toFixed(3);
-              const scale = 1 - (scrollY / vh) * 0.05;
-              baseCanvas.style.transform = `scale(${scale.toFixed(3)}) translateZ(0)`;
-            }
-          }
+      // Continuous 60-120 FPS Animation Loop
+      function animationLoop() {
+        requestAnimationFrame(animationLoop);
 
-          updateNavActiveTab();
-        });
+        const diff = targetProgress - currentProgress;
+        if (Math.abs(diff) > 0.00005) {
+          currentProgress += diff * LERP_FACTOR;
+        } else {
+          currentProgress = targetProgress;
+        }
+
+        const targetFrameIndex = Math.min(
+          TOTAL_FRAMES - 1,
+          Math.max(0, Math.round(currentProgress * (TOTAL_FRAMES - 1)))
+        );
+
+        prioritizeAround(targetFrameIndex);
+
+        if (targetFrameIndex !== lastRenderedIndex) {
+          drawFrame(targetFrameIndex);
+        }
       }
 
-      window.handleCanvasScroll = handleScroll;
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll();
-      updateNavActiveTab();
+      requestAnimationFrame(animationLoop);
 
       // Smooth Scroll Helper (works seamlessly with Lenis momentum engine)
       function smoothScrollTo(target) {
         if (window.lenis) {
-          window.lenis.scrollTo(target, { duration: 0.85 });
+          window.lenis.scrollTo(target, { duration: 1.0 });
         } else if (typeof target === 'number') {
           window.scrollTo({ top: target, behavior: 'smooth' });
         } else if (target && target.scrollIntoView) {
@@ -6153,7 +6016,7 @@
         }
 
         const lenis = new Lenis({
-          duration: 0.85, // Snappy, silky momentum without sluggish lag
+          duration: 1.0, // Silky natural momentum coasting
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential deceleration curve
           orientation: 'vertical',
           gestureOrientation: 'vertical',
@@ -6167,9 +6030,9 @@
 
         window.lenis = lenis;
 
-        lenis.on('scroll', () => {
-          if (typeof window.handleCanvasScroll === 'function') {
-            window.handleCanvasScroll();
+        lenis.on('scroll', (e) => {
+          if (typeof e.progress === 'number' && typeof window.updateScrollProgress === 'function') {
+            window.updateScrollProgress(e.progress);
           }
         });
 
