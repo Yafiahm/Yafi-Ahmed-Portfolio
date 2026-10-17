@@ -5283,12 +5283,27 @@
         const drawY = TOP_GAP;
 
         baseCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        baseCtx.clearRect(0, 0, cw, ch);
 
-        // Fill background with exact deep space black (#060609)
-        baseCtx.fillStyle = '#060609';
-        baseCtx.fillRect(0, 0, cw, ch);
+        // Seamless Edge-to-Edge Ambient Light Bleed (Eliminates Side Black Bars on Wide Displays)
+        if (cw > drawW) {
+          // Left neon purple ambient glow stretch
+          baseCtx.drawImage(frame, 0, 0, 4, imgH, 0, drawY, drawX + 1, drawH);
 
-        // Draw main centered frame (Single high-speed GPU pass)
+          // Right neon crimson ambient glow stretch
+          const rightStartX = Math.floor(drawX + drawW - 1);
+          const rightW = cw - rightStartX;
+          baseCtx.drawImage(frame, imgW - 4, 0, 4, imgH, rightStartX, drawY, rightW, drawH);
+
+          // Top gap ambient bleed
+          if (drawY > 0) {
+            baseCtx.drawImage(frame, 0, 0, imgW, 4, drawX, 0, drawW, drawY + 1);
+            baseCtx.drawImage(frame, 0, 0, 4, 4, 0, 0, drawX + 1, drawY + 1);
+            baseCtx.drawImage(frame, imgW - 4, 0, 4, 4, rightStartX, 0, rightW, drawY + 1);
+          }
+        }
+
+        // Draw main centered high-definition frame
         baseCtx.drawImage(frame, drawX, drawY, drawW, drawH);
         lastRenderedIndex = index;
       }
