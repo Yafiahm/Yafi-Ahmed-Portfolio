@@ -46,7 +46,7 @@
       yearsExperience: "4+",
       completedBuilds: "24+",
       flightHours: "1,200+",
-      profileImg: "ezgif-6e1d808a771bb499-png-split/ezgif-frame-001.png"
+      profileImg: "frames/frame-001.jpg"
     },
     techStack: [
       // AI & MACHINE LEARNING TOOLS

@@ -12,7 +12,7 @@
       ]
     },
     {
-      "source": "/ezgif-6e1d808a771bb499-png-split/(.*)",
+      "source": "/frames/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]

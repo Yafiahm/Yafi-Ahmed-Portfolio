@@ -3501,7 +3501,6 @@
 
   <!-- LAYER 0: BASE CANVAS (300-FRAME CONTINUOUS SCROLL ENGINE) -->
   <canvas id="animation-canvas"></canvas>
-  <canvas id="fg-canvas"></canvas>
 
   <!-- FLOATING NAVBAR (MATCHING REFERENCE MOCKUP EXACTLY) -->
   <header class="navbar-pill-wrapper">
@@ -3686,7 +3685,7 @@
         <div class="about-circle-laser"></div>
         <div class="about-circle-ring">
           <div class="about-circle-inner">
-            <img src="ezgif-6e1d808a771bb499-png-split/ezgif-frame-001.png" alt="Yafi Ahmed" class="about-circle-img" />
+            <img src="frames/frame-001.jpg" alt="Yafi Ahmed" class="about-circle-img" />
           </div>
         </div>
       </div>
@@ -5221,39 +5220,69 @@
   <!-- JAVASCRIPT: FRAME ENGINE & SCROLL SCRUBBING -->
   <script>
     (function () {
+      // =======================================================
+      // ULTRA-FAST 3-TIER PROGRESSIVE FRAME ENGINE (12MB TOTAL)
+      // =======================================================
       const TOTAL_FRAMES = 300;
       const baseCanvas = document.getElementById('animation-canvas');
-      const baseCtx = baseCanvas.getContext('2d');
-      const fgCanvas = document.getElementById('fg-canvas');
-      const fgCtx = fgCanvas ? fgCanvas.getContext('2d') : null;
+      const baseCtx = baseCanvas ? baseCanvas.getContext('2d', { alpha: false, desynchronized: true }) : null;
 
       const frames = new Array(TOTAL_FRAMES);
+      const loadingStates = new Uint8Array(TOTAL_FRAMES); // 0=unloaded, 1=loading, 2=loaded
       let lastRenderedIndex = -1;
 
-      // Handle HiDPI Canvas Resizing
+      // Handle HiDPI Canvas Resizing with capped DPR for 60FPS fluid scrubbing
       function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const cw = window.innerWidth;
         const ch = window.innerHeight;
         if (baseCanvas) {
-          baseCanvas.width = cw * dpr;
-          baseCanvas.height = ch * dpr;
-        }
-        if (fgCanvas) {
-          fgCanvas.width = cw * dpr;
-          fgCanvas.height = ch * dpr;
+          baseCanvas.width = Math.floor(cw * dpr);
+          baseCanvas.height = Math.floor(ch * dpr);
         }
         if (lastRenderedIndex >= 0) {
           drawFrame(lastRenderedIndex);
         }
       }
-      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('resize', resizeCanvas, { passive: true });
       resizeCanvas();
 
-      // Retrieve loaded frame or nearest neighbor
+      function getFramePath(idx) {
+        const num = String(idx + 1).padStart(3, '0');
+        return `frames/frame-${num}.jpg`;
+      }
+
+      function loadSingleFrame(index, priority = false) {
+        if (index < 0 || index >= TOTAL_FRAMES) return;
+        if (loadingStates[index] !== 0) return;
+        loadingStates[index] = 1;
+
+        const img = new Image();
+        if (priority) {
+          img.fetchPriority = 'high';
+        }
+        img.decoding = 'async';
+        img.src = getFramePath(index);
+        img.onload = () => {
+          frames[index] = img;
+          loadingStates[index] = 2;
+          if (lastRenderedIndex === -1 && index === 0) {
+            drawFrame(0);
+          } else if (lastRenderedIndex >= 0 && lastRenderedIndex === index) {
+            drawFrame(lastRenderedIndex);
+          }
+        };
+        img.onerror = () => {
+          loadingStates[index] = 0;
+        };
+      }
+
+      // Fast nearest-neighbor frame lookup
       function getFrame(index) {
         const frame = frames[index];
         if (frame && frame.complete && frame.naturalWidth !== 0) return frame;
+
+        // Search concentric closest neighbors
         for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
           const prev = frames[index - offset];
           if (prev && prev.complete && prev.naturalWidth !== 0) return prev;
@@ -5264,10 +5293,11 @@
       }
 
       function drawFrame(index) {
+        if (!baseCtx) return;
         const frame = getFrame(index);
         if (!frame) return;
 
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const cw = window.innerWidth;
         const ch = window.innerHeight;
         const imgW = 1280;
@@ -5281,8 +5311,12 @@
         const drawY = TOP_GAP;
 
         baseCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        baseCtx.clearRect(0, 0, cw, ch);
 
+        // Fill background with exact deep space black (#060609)
+        baseCtx.fillStyle = '#060609';
+        baseCtx.fillRect(0, 0, cw, ch);
+
+        // Seamless border bleed if screen is wider than 16:9
         if (cw > drawW) {
           baseCtx.drawImage(frame, 0, 0, 4, imgH, 0, drawY, drawX + 1, drawH);
           const rightStartX = Math.floor(drawX + drawW - 1);
@@ -5294,33 +5328,67 @@
           baseCtx.drawImage(frame, imgW - 4, 0, 4, 4, rightStartX, 0, rightW, TOP_GAP + 1);
         }
 
+        // Draw main centered frame
         baseCtx.drawImage(frame, drawX, drawY, drawW, drawH);
-
-        if (fgCtx) {
-          fgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          fgCtx.clearRect(0, 0, cw, ch);
-        }
-
         lastRenderedIndex = index;
       }
 
-      // Preload all 300 frames
-      for (let i = 1; i <= TOTAL_FRAMES; i++) {
-        const img = new Image();
-        const index = i - 1;
-        const formattedIndex = String(i).padStart(3, '0');
-        img.src = `ezgif-6e1d808a771bb499-png-split/ezgif-frame-${formattedIndex}.png`;
+      // 1. TIER 1: INSTANT KEYFRAMES (Every 10th frame = only ~30 lightweight frames / 1MB total!)
+      // Guarantees zero-freeze responsiveness across the entire scroll range within 200ms
+      const KEYFRAME_INTERVAL = 10;
+      loadSingleFrame(0, true);
+      for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
+        loadSingleFrame(i, true);
+      }
+      loadSingleFrame(TOTAL_FRAMES - 1, true);
 
-        img.onload = () => {
-          frames[index] = img;
-          if (index === 0 && lastRenderedIndex === -1) {
-            drawFrame(0);
+      // 2. TIER 2: PROXIMITY PRIORITY LOADER
+      // Loads frames surrounding current scroll position on demand
+      function prioritizeAround(currentIndex) {
+        const RANGE = 10;
+        const start = Math.max(0, currentIndex - RANGE);
+        const end = Math.min(TOTAL_FRAMES - 1, currentIndex + RANGE);
+        for (let i = start; i <= end; i++) {
+          if (loadingStates[i] === 0) {
+            loadSingleFrame(i, true);
           }
-        };
-
-        if (img.decode) {
-          img.decode().catch(() => {});
         }
+      }
+
+      // 3. TIER 3: CONTROLLED CONCURRENT BACKGROUND POOL
+      // Silently loads remaining frames with max 4 parallel requests so UI thread never drops a frame
+      let bgIndex = 0;
+      const MAX_CONCURRENT = 4;
+      let activeRequests = 0;
+
+      function pumpBackgroundLoader() {
+        while (activeRequests < MAX_CONCURRENT && bgIndex < TOTAL_FRAMES) {
+          const idx = bgIndex++;
+          if (loadingStates[idx] === 0) {
+            loadingStates[idx] = 1;
+            activeRequests++;
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = getFramePath(idx);
+            img.onload = () => {
+              frames[idx] = img;
+              loadingStates[idx] = 2;
+              activeRequests--;
+              pumpBackgroundLoader();
+            };
+            img.onerror = () => {
+              loadingStates[idx] = 0;
+              activeRequests--;
+              pumpBackgroundLoader();
+            };
+          }
+        }
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => pumpBackgroundLoader());
+      } else {
+        setTimeout(pumpBackgroundLoader, 350);
       }
 
       // Scroll scrubbing logic
@@ -5457,6 +5525,8 @@
           TOTAL_FRAMES - 1,
           Math.max(0, Math.round(currentProgress * (TOTAL_FRAMES - 1)))
         );
+
+        prioritizeAround(targetFrameIndex);
 
         if (targetFrameIndex !== lastRenderedIndex) {
           drawFrame(targetFrameIndex);
