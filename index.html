@@ -5205,7 +5205,7 @@
   <script>
     (function () {
       // =======================================================
-      // ULTRA-PERFORMANCE 3D SCROLL-SCRUBBING ENGINE (300 FRAMES)
+      // ULTRA-FAST 3-TIER PROGRESSIVE FRAME ENGINE (12MB TOTAL)
       // =======================================================
       const TOTAL_FRAMES = 300;
       const baseCanvas = document.getElementById('animation-canvas');
@@ -5215,9 +5215,9 @@
       const loadingStates = new Uint8Array(TOTAL_FRAMES); // 0=unloaded, 1=loading, 2=loaded
       let lastRenderedIndex = -1;
 
-      // Handle HiDPI Canvas Resizing with capped DPR for 60-120 FPS fluid scrubbing
+      // Handle HiDPI Canvas Resizing with capped DPR for 60FPS fluid scrubbing
       function resizeCanvas() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const cw = window.innerWidth;
         const ch = window.innerHeight;
         if (baseCanvas) {
@@ -5233,25 +5233,45 @@
 
       function getFramePath(idx) {
         const num = String(idx + 1).padStart(3, '0');
-        return `frames/frame-${num}.jpg?v=3`;
+        return `frames/frame-${num}.jpg`;
       }
 
-      // Fast nearest-neighbor frame lookup (O(1) search)
+      function loadSingleFrame(index, priority = false) {
+        if (index < 0 || index >= TOTAL_FRAMES) return;
+        if (loadingStates[index] !== 0) return;
+        loadingStates[index] = 1;
+
+        const img = new Image();
+        if (priority) {
+          img.fetchPriority = 'high';
+        }
+        img.decoding = 'async';
+        img.src = getFramePath(index);
+        img.onload = () => {
+          frames[index] = img;
+          loadingStates[index] = 2;
+          if (lastRenderedIndex === -1 && index === 0) {
+            drawFrame(0);
+          } else if (lastRenderedIndex >= 0 && lastRenderedIndex === index) {
+            drawFrame(lastRenderedIndex);
+          }
+        };
+        img.onerror = () => {
+          loadingStates[index] = 0;
+        };
+      }
+
+      // Fast nearest-neighbor frame lookup
       function getFrame(index) {
         const frame = frames[index];
         if (frame && frame.complete && frame.naturalWidth !== 0) return frame;
 
-        // Concentric search up to 8 frames
-        for (let offset = 1; offset <= 8; offset++) {
+        // Search concentric closest neighbors
+        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
           const prev = frames[index - offset];
           if (prev && prev.complete && prev.naturalWidth !== 0) return prev;
           const next = frames[index + offset];
           if (next && next.complete && next.naturalWidth !== 0) return next;
-        }
-
-        // Fallback to last successfully rendered frame or frame 0
-        if (lastRenderedIndex >= 0 && frames[lastRenderedIndex] && frames[lastRenderedIndex].complete) {
-          return frames[lastRenderedIndex];
         }
         return (frames[0] && frames[0].complete) ? frames[0] : null;
       }
@@ -5261,7 +5281,7 @@
         const frame = getFrame(index);
         if (!frame) return;
 
-        const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
         const cw = window.innerWidth;
         const ch = window.innerHeight;
         const imgW = 1280;
@@ -5275,6 +5295,7 @@
         const drawY = TOP_GAP;
 
         baseCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        baseCtx.clearRect(0, 0, cw, ch);
 
         // Seamless Edge-to-Edge Ambient Light Bleed (Eliminates Side Black Bars on Wide Displays)
         if (cw > drawW) {
@@ -5299,94 +5320,69 @@
         lastRenderedIndex = index;
       }
 
-      // =======================================================
-      // HIGH-PERFORMANCE CONCURRENT FRAME STREAMER (MAX 4 ACTIVE)
-      // =======================================================
-      const highPriorityQueue = [];
-      const lowPriorityQueue = [];
-      let activeStreams = 0;
-      const MAX_STREAMS = 4;
+      // 1. TIER 1: INSTANT KEYFRAMES (Every 2nd frame = 150 keyframes / 5.5MB total)
+      // Loads 150 keyframes across the entire scroll timeline within ~350ms!
+      // This guarantees an active neighbor is NEVER further than 1 single frame away.
+      const KEYFRAME_INTERVAL = 2;
+      loadSingleFrame(0, true);
+      for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
+        loadSingleFrame(i, true);
+      }
+      loadSingleFrame(TOTAL_FRAMES - 1, true);
 
-      function pumpQueue() {
-        while (activeStreams < MAX_STREAMS && (highPriorityQueue.length > 0 || lowPriorityQueue.length > 0)) {
-          const idx = highPriorityQueue.length > 0 ? highPriorityQueue.shift() : lowPriorityQueue.shift();
+      // 2. TIER 2: PROXIMITY PRIORITY LOADER
+      // Rapidly loads 14 surrounding frames around current scroll position
+      function prioritizeAround(currentIndex) {
+        const RANGE = 14;
+        const start = Math.max(0, currentIndex - RANGE);
+        const end = Math.min(TOTAL_FRAMES - 1, currentIndex + RANGE);
+        for (let i = start; i <= end; i++) {
+          if (loadingStates[i] === 0) {
+            loadSingleFrame(i, true);
+          }
+        }
+      }
+
+      // 3. TIER 3: CONTROLLED CONCURRENT BACKGROUND POOL
+      // Loads remaining in-between frames with 8 parallel requests
+      let bgIndex = 0;
+      const MAX_CONCURRENT = 8;
+      let activeRequests = 0;
+
+      function pumpBackgroundLoader() {
+        while (activeRequests < MAX_CONCURRENT && bgIndex < TOTAL_FRAMES) {
+          const idx = bgIndex++;
           if (loadingStates[idx] === 0) {
             loadingStates[idx] = 1;
-            activeStreams++;
-
+            activeRequests++;
             const img = new Image();
             img.decoding = 'async';
             img.src = getFramePath(idx);
             img.onload = () => {
               frames[idx] = img;
               loadingStates[idx] = 2;
-              activeStreams--;
-              if (lastRenderedIndex === -1 && idx === 0) {
-                drawFrame(0);
-              } else if (lastRenderedIndex >= 0 && Math.abs(lastRenderedIndex - idx) <= 1) {
-                drawFrame(lastRenderedIndex);
-              }
-              pumpQueue();
+              activeRequests--;
+              pumpBackgroundLoader();
             };
             img.onerror = () => {
               loadingStates[idx] = 0;
-              activeStreams--;
-              pumpQueue();
+              activeRequests--;
+              pumpBackgroundLoader();
             };
           }
         }
       }
 
-      function requestFrame(idx, isHigh = false) {
-        if (idx < 0 || idx >= TOTAL_FRAMES) return;
-        if (loadingStates[idx] !== 0) return;
-
-        if (isHigh) {
-          if (!highPriorityQueue.includes(idx)) {
-            highPriorityQueue.unshift(idx);
-          }
-        } else {
-          if (!lowPriorityQueue.includes(idx) && !highPriorityQueue.includes(idx)) {
-            lowPriorityQueue.push(idx);
-          }
-        }
-        pumpQueue();
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => pumpBackgroundLoader());
+      } else {
+        setTimeout(pumpBackgroundLoader, 200);
       }
 
-      // Prioritize 14 frames immediately surrounding the active scroll position
-      function prioritizeAround(currentIndex) {
-        requestFrame(currentIndex, true);
-        for (let i = 1; i <= 8; i++) {
-          requestFrame(currentIndex + i, true);
-          requestFrame(currentIndex - i, true);
-        }
-      }
-
-      // 1. Instantly request Frame 0
-      requestFrame(0, true);
-
-      // 2. Pre-cache Keyframes at interval 4 across timeline (75 keyframes = ~2.8MB total)
-      const KEYFRAME_INTERVAL = 4;
-      for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
-        requestFrame(i, false);
-      }
-      requestFrame(TOTAL_FRAMES - 1, false);
-
-      // 3. Incrementally load all remaining intermediate frames on idle / background
-      setTimeout(() => {
-        for (let i = 0; i < TOTAL_FRAMES; i++) {
-          if (loadingStates[i] === 0) {
-            requestFrame(i, false);
-          }
-        }
-      }, 1000);
-
-      // =======================================================
-      // SMOOTH SCROLL SCRUBBING ORCHESTRATION
-      // =======================================================
+      // Scroll scrubbing logic with snappy response
       let targetProgress = 0;
       let currentProgress = 0;
-      const LERP_FACTOR = 0.55; // Snappy, fluid deceleration
+      const LERP_FACTOR = 0.70;
 
       // Stage Elements
       const stageHero = document.getElementById('stage-hero');
@@ -5420,17 +5416,20 @@
       const cueScrollApproach = document.getElementById('cue-scroll-approach');
       const cueScrollFaq = document.getElementById('cue-scroll-faq');
 
-      function updateScrollProgress(prog) {
-        if (typeof prog === 'number') {
-          targetProgress = Math.min(Math.max(prog, 0), 1);
+      const btnSeeMore = document.getElementById('btn-see-more-projects');
+
+      function updateScrollProgress() {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+        if (maxScroll > 0) {
+          targetProgress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
         } else {
-          const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
-          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-          targetProgress = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
+          targetProgress = 0;
         }
       }
-      window.updateScrollProgress = updateScrollProgress;
 
+      // Cached section positions to eliminate synchronous layout reflow (Layout Thrashing)
       let cachedSectionTops = { about: 1000, techStack: 2000, projects: 3000, offerings: 5000, contact: 8000 };
       function updateCachedSectionTops() {
         const vh = window.innerHeight;
@@ -5449,6 +5448,7 @@
       function updateNavActiveTab() {
         const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
         const vh = window.innerHeight;
+
         const navLinks = [navHome, navAbout, navTechStack, navProjects, navOfferings, navContact];
         function setActive(targetLink) {
           navLinks.forEach(link => {
@@ -5510,12 +5510,11 @@
       updateScrollProgress();
       updateNavActiveTab();
 
-      // Continuous 60-120 FPS Animation Loop
       function animationLoop() {
         requestAnimationFrame(animationLoop);
 
         const diff = targetProgress - currentProgress;
-        if (Math.abs(diff) > 0.00005) {
+        if (Math.abs(diff) > 0.0001) {
           currentProgress += diff * LERP_FACTOR;
         } else {
           currentProgress = targetProgress;
@@ -5538,7 +5537,7 @@
       // Smooth Scroll Helper (works seamlessly with Lenis momentum engine)
       function smoothScrollTo(target) {
         if (window.lenis) {
-          window.lenis.scrollTo(target, { duration: 1.0 });
+          window.lenis.scrollTo(target, { duration: 1.15 });
         } else if (typeof target === 'number') {
           window.scrollTo({ top: target, behavior: 'smooth' });
         } else if (target && target.scrollIntoView) {
@@ -6016,23 +6015,21 @@
         }
 
         const lenis = new Lenis({
-          duration: 1.0, // Silky natural momentum coasting
+          duration: 1.15, // Silky natural momentum coasting
           easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential deceleration curve
           orientation: 'vertical',
           gestureOrientation: 'vertical',
           smoothWheel: true,
           wheelMultiplier: 1.0,
-          touchMultiplier: 1.0,
-          smoothTouch: false,
-          syncTouch: false,
+          touchMultiplier: 1.2,
           infinite: false
         });
 
         window.lenis = lenis;
 
         lenis.on('scroll', (e) => {
-          if (typeof e.progress === 'number' && typeof window.updateScrollProgress === 'function') {
-            window.updateScrollProgress(e.progress);
+          if (typeof e.progress === 'number') {
+            targetProgress = e.progress;
           }
         });
 
