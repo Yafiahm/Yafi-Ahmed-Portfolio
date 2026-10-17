@@ -100,18 +100,10 @@
       display: block;
       pointer-events: none;
       z-index: 0;
-    }
-
-    /* LAYER 2: Foreground Subject Canvas (Renders Yafi in Front of Text) */
-    #fg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      display: block;
-      pointer-events: none;
-      z-index: 2;
+      will-change: transform;
+      transform: translateZ(0);
+      contain: strict;
+      image-rendering: -webkit-optimize-contrast;
     }
 
     /* Ambient atmospheric background glows */
@@ -5316,26 +5308,15 @@
         baseCtx.fillStyle = '#060609';
         baseCtx.fillRect(0, 0, cw, ch);
 
-        // Seamless border bleed if screen is wider than 16:9
-        if (cw > drawW) {
-          baseCtx.drawImage(frame, 0, 0, 4, imgH, 0, drawY, drawX + 1, drawH);
-          const rightStartX = Math.floor(drawX + drawW - 1);
-          const rightW = cw - rightStartX;
-          baseCtx.drawImage(frame, imgW - 4, 0, 4, imgH, rightStartX, drawY, rightW, drawH);
-
-          baseCtx.drawImage(frame, 0, 0, imgW, 4, drawX, 0, drawW, TOP_GAP + 1);
-          baseCtx.drawImage(frame, 0, 0, 4, 4, 0, 0, drawX + 1, TOP_GAP + 1);
-          baseCtx.drawImage(frame, imgW - 4, 0, 4, 4, rightStartX, 0, rightW, TOP_GAP + 1);
-        }
-
-        // Draw main centered frame
+        // Draw main centered frame (Single high-speed GPU pass)
         baseCtx.drawImage(frame, drawX, drawY, drawW, drawH);
         lastRenderedIndex = index;
       }
 
-      // 1. TIER 1: INSTANT KEYFRAMES (Every 10th frame = only ~30 lightweight frames / 1MB total!)
-      // Guarantees zero-freeze responsiveness across the entire scroll range within 200ms
-      const KEYFRAME_INTERVAL = 10;
+      // 1. TIER 1: INSTANT KEYFRAMES (Every 3rd frame = 100 keyframes / 3.8MB total)
+      // Loads 100 keyframes across the entire scroll timeline within ~400ms!
+      // This guarantees an active neighbor is NEVER further than 1-2 frames away.
+      const KEYFRAME_INTERVAL = 3;
       loadSingleFrame(0, true);
       for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
         loadSingleFrame(i, true);
@@ -5343,9 +5324,9 @@
       loadSingleFrame(TOTAL_FRAMES - 1, true);
 
       // 2. TIER 2: PROXIMITY PRIORITY LOADER
-      // Loads frames surrounding current scroll position on demand
+      // Rapidly loads 12 surrounding frames around current scroll position
       function prioritizeAround(currentIndex) {
-        const RANGE = 10;
+        const RANGE = 12;
         const start = Math.max(0, currentIndex - RANGE);
         const end = Math.min(TOTAL_FRAMES - 1, currentIndex + RANGE);
         for (let i = start; i <= end; i++) {
@@ -5356,9 +5337,9 @@
       }
 
       // 3. TIER 3: CONTROLLED CONCURRENT BACKGROUND POOL
-      // Silently loads remaining frames with max 4 parallel requests so UI thread never drops a frame
+      // Loads remaining in-between frames with 8 parallel requests
       let bgIndex = 0;
-      const MAX_CONCURRENT = 4;
+      const MAX_CONCURRENT = 8;
       let activeRequests = 0;
 
       function pumpBackgroundLoader() {
@@ -5388,13 +5369,13 @@
       if ('requestIdleCallback' in window) {
         requestIdleCallback(() => pumpBackgroundLoader());
       } else {
-        setTimeout(pumpBackgroundLoader, 350);
+        setTimeout(pumpBackgroundLoader, 200);
       }
 
-      // Scroll scrubbing logic
+      // Scroll scrubbing logic with snappy response
       let targetProgress = 0;
       let currentProgress = 0;
-      const LERP_FACTOR = 0.20;
+      const LERP_FACTOR = 0.55;
 
       // Stage Elements
       const stageHero = document.getElementById('stage-hero');
@@ -5441,14 +5422,25 @@
         }
       }
 
+      // Cached section positions to eliminate synchronous layout reflow (Layout Thrashing)
+      let cachedSectionTops = { about: 1000, techStack: 2000, projects: 3000, offerings: 5000, contact: 8000 };
+      function updateCachedSectionTops() {
+        const vh = window.innerHeight;
+        cachedSectionTops = {
+          about: stageAbout ? stageAbout.offsetTop : vh,
+          techStack: stageTechStack ? stageTechStack.offsetTop : vh * 2,
+          projects: stageProjects ? stageProjects.offsetTop : vh * 3,
+          offerings: stageOfferings ? stageOfferings.offsetTop : vh * 5,
+          contact: stageContact ? stageContact.offsetTop : vh * 8
+        };
+      }
+      window.addEventListener('resize', updateCachedSectionTops, { passive: true });
+      window.addEventListener('load', updateCachedSectionTops);
+      setTimeout(updateCachedSectionTops, 300);
+
       function updateNavActiveTab() {
         const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
         const vh = window.innerHeight;
-        const aboutTop = stageAbout ? stageAbout.offsetTop : vh;
-        const techStackTop = stageTechStack ? stageTechStack.offsetTop : vh * 2;
-        const projectsTop = stageProjects ? stageProjects.offsetTop : vh * 3;
-        const offeringsTop = stageOfferings ? stageOfferings.offsetTop : vh * 5;
-        const contactTop = stageContact ? stageContact.offsetTop : vh * 8;
 
         const navLinks = [navHome, navAbout, navTechStack, navProjects, navOfferings, navContact];
         function setActive(targetLink) {
@@ -5460,15 +5452,15 @@
           });
         }
 
-        if (scrollY < aboutTop - vh * 0.45) {
+        if (scrollY < cachedSectionTops.about - vh * 0.45) {
           setActive(navHome);
-        } else if (scrollY < techStackTop - vh * 0.45) {
+        } else if (scrollY < cachedSectionTops.techStack - vh * 0.45) {
           setActive(navAbout);
-        } else if (scrollY < projectsTop - vh * 0.45) {
+        } else if (scrollY < cachedSectionTops.projects - vh * 0.45) {
           setActive(navTechStack);
-        } else if (scrollY < offeringsTop - vh * 0.45) {
+        } else if (scrollY < cachedSectionTops.offerings - vh * 0.45) {
           setActive(navProjects);
-        } else if (scrollY < contactTop - vh * 0.45) {
+        } else if (scrollY < cachedSectionTops.contact - vh * 0.45) {
           setActive(navOfferings);
         } else {
           setActive(navContact);
