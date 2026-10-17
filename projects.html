@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Showcase — Yafi Ahmed</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Bebas+Neue&family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Data Engine -->
+  <script src="portfolio-data.js"></script>
+  <!-- Natural Momentum Scroll Engine (Lenis) -->
+  <script src="lenis.min.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #060609;
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-purple: #9333ea;
+      --accent-crimson: #e11d48;
+      --cyan-glow: #38bdf8;
+      --font-hero: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: auto !important;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      scrollbar-width: thin;
+      scrollbar-color: #c026d3 #060609;
+    }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    /* CYBER NEON GLOWING CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #060609; border-left: 1px solid rgba(255, 255, 255, 0.05); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
+      border-radius: 9999px;
+      border: 2px solid #060609;
+      box-shadow: 0 0 14px rgba(192, 38, 211, 0.65);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #a855f7 0%, #e879f9 50%, #fb7185 100%);
+      box-shadow: 0 0 22px rgba(244, 63, 94, 0.95);
+    }
+
+    body {
+      background-color: var(--bg-black);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ambient-glow-left {
+      position: fixed;
+      top: 15vh;
+      left: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(147, 51, 234, 0.25) 0%, rgba(88, 28, 135, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-right {
+      position: fixed;
+      top: 20vh;
+      right: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(225, 29, 72, 0.26) 0%, rgba(159, 18, 57, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar-pill-wrapper {
+      position: fixed;
+      top: 1.1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 4.5rem);
+      max-width: 1300px;
+      z-index: 1000;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .navbar-pill-wrapper.nav-hidden {
+      transform: translateX(-50%) translateY(-145%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .navbar-pill {
+      height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14, 14, 20, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 9999px;
+      padding: 0 0.8rem 0 1rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .nav-logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(168, 85, 247, 0.8);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 15, 0.6);
+      text-decoration: none;
+    }
+
+    .nav-monogram {
+      font-family: var(--font-hero);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+
+    .nav-tabs-center {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-tabs-center a {
+      color: var(--text-gray);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.25s ease;
+      position: relative;
+      padding: 0.35rem 0;
+    }
+
+    .nav-tabs-center a:hover,
+    .nav-tabs-center a.active {
+      color: #ffffff;
+    }
+
+    .nav-tabs-center a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 2.5px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.8);
+    }
+
+    .nav-auth-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-btn-signin {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #d1d5db;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.42rem 1.15rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn-signup {
+      background: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.48rem 1.35rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(192, 38, 211, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    /* MAIN PAGE CONTENT */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 7.5rem 2rem 5rem 2rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .page-header {
+      margin-bottom: 2.5rem;
+      text-align: left;
+    }
+
+    .page-tag {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #e11d48;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #e11d48;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #e11d48;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      margin-bottom: 0.8rem;
+    }
+
+    .page-subtitle {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: #94a3b8;
+      max-width: 780px;
+      line-height: 1.6;
+    }
+
+    /* FILTERS */
+    .filters-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-bottom: 3rem;
+      padding: 0.9rem 1.2rem;
+      background: rgba(14, 14, 22, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      width: fit-content;
+      backdrop-filter: blur(14px);
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      border-radius: 9999px;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(225, 29, 72, 0.7));
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.4);
+    }
+
+    /* PROJECTS GRID */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+      margin-bottom: 5rem;
+    }
+
+    .project-card {
+      background: rgba(14, 14, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(168, 85, 247, 0.5);
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 30px rgba(168, 85, 247, 0.25);
+    }
+
+    .project-media-wrap {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      overflow: hidden;
+      background: #09090e;
+    }
+
+    .project-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .project-card:hover .project-img {
+      transform: scale(1.05);
+    }
+
+    .project-media-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(14, 14, 22, 0.95) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .project-badge-float {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(10, 10, 16, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #38bdf8;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .project-year-float {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(10, 10, 16, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+    }
+
+    .project-body {
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .project-title {
+      font-family: var(--font-hero);
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      margin-bottom: 0.6rem;
+      line-height: 1.1;
+    }
+
+    .project-summary {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 1.4rem;
+    }
+
+    .specs-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .spec-pill {
+      font-size: 0.7rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-view-details {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(225, 29, 72, 0.3));
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      color: #ffffff;
+      padding: 0.55rem 1.2rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-view-details:hover {
+      background: linear-gradient(135deg, #7c3aed, #e11d48);
+      border-color: transparent;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
+    }
+
+    /* MODAL: PROJECT BLUEPRINT DETAIL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 8, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-project-card {
+      background: rgba(14, 14, 22, 0.96);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 760px;
+      padding: 2.2rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 35px 90px rgba(0, 0, 0, 0.95), 0 0 60px rgba(168, 85, 247, 0.3);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.3rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-gray);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .modal-close-btn:hover { background: rgba(225, 29, 72, 0.25); border-color: #e11d48; color: #fff; }
+
+    /* FOOTER */
+    .footer-ecosystem {
+      width: 100%;
+      padding: 3.5rem 4vw 2.8rem 4vw;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 8, 12, 0.95);
+      position: relative;
+      z-index: 15;
+    }
+
+    .footer-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1.1fr;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .footer-col-brand { display: flex; flex-direction: column; gap: 0.85rem; }
+    .footer-brand-header { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-title { font-size: 1rem; font-weight: 800; color: #ffffff; letter-spacing: 0.05em; }
+    .footer-motto { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .footer-location-telemetry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .footer-col-nav { display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-heading { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #c084fc; margin-bottom: 0.3rem; }
+    .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links-list a { color: #94a3b8; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease; }
+    .footer-links-list a:hover { color: #ffffff; transform: translateX(3px); }
+
+    .footer-col-legal { display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-end; text-align: right; }
+    .footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: flex-end; }
+    .footer-legal-btn { background: transparent; border: none; color: #94a3b8; font-size: 0.76rem; cursor: pointer; text-decoration: underline; }
+    .footer-copy { font-size: 0.74rem; color: #64748b; }
+    .btn-back-top {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #cbd5e1;
+      border-radius: 9999px;
+      padding: 7px 16px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+    .btn-back-top:hover { border-color: #a855f7; color: #ffffff; background: rgba(168, 85, 247, 0.2); }
+
+    /* Button tactile */
+    button, a.btn-view-details, .nav-btn-signin, .nav-btn-signup, .btn-back-top {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    button:active, a.btn-view-details:active, .nav-btn-signin:active, .nav-btn-signup:active {
+      transform: scale(0.94) !important;
+    }
+    .btn-ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: btnRippleAnim 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(192, 38, 211, 0.35) 50%, transparent 75%);
+      pointer-events: none;
+    }
+    @keyframes btnRippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    @media (max-width: 900px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-col-legal { align-items: flex-start; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow-left"></div>
+  <div class="ambient-glow-right"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar-pill-wrapper">
+    <nav class="navbar-pill">
+      <a href="index.html" class="nav-logo-badge">
+        <span class="nav-monogram">YA</span>
+      </a>
+
+      <ul class="nav-tabs-center">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="ai-assistant.html">AI Studio</a></li>
+        <li><a href="techstack.html">Tech Stack</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="offerings.html">Offerings</a></li>
+        <li><a href="connect.html">Connect</a></li>
+      </ul>
+
+      <div class="nav-auth-group">
+        <a href="connect.html" class="nav-btn-signin">Inquiries</a>
+        <a href="offerings.html" class="nav-btn-signup">Services &rarr;</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="page-wrapper">
+    <div class="page-header">
+      <div class="page-tag">Engineering Archive</div>
+      <h1 class="page-title">Project Showcase</h1>
+      <p class="page-subtitle">
+        Physical autonomous flight platforms, real-time aerospace trajectory simulators, neural agent networks, and high-volume enterprise SaaS applications.
+      </p>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filters-wrap">
+      <button class="filter-btn active" data-filter="all">All Projects</button>
+      <button class="filter-btn" data-filter="Drone">Autonomous Drones</button>
+      <button class="filter-btn" data-filter="Aerospace">Space Tech &amp; Sim</button>
+      <button class="filter-btn" data-filter="Agent">Agentic AI</button>
+      <button class="filter-btn" data-filter="SaaS">Enterprise Web</button>
+    </div>
+
+    <!-- PROJECTS GRID -->
+    <div class="projects-grid" id="projects-grid">
+      <!-- Dynamically populated from PortfolioData -->
+    </div>
+  </main>
+
+  <!-- PROJECT BLUEPRINT DETAIL MODAL -->
+  <div class="modal-overlay" id="modal-project-detail" data-lenis-prevent>
+    <div class="modal-project-card">
+      <button class="modal-close-btn" id="btn-close-pdetail">✕</button>
+      <span id="pmodal-cat" style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase;">CATEGORY</span>
+      <h2 id="pmodal-title" style="font-family: var(--font-hero); font-size: 2.2rem; color: #ffffff; margin: 0.3rem 0 1rem 0;">PROJECT TITLE</h2>
+      <div id="pmodal-media" style="width: 100%; height: 320px; border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; background: #000;">
+        <img id="pmodal-img" src="" alt="Project" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+      <p id="pmodal-desc" style="color: #cbd5e1; font-size: 0.92rem; line-height: 1.7; margin-bottom: 1.5rem;"></p>
+      <h4 style="font-size: 0.85rem; color: #ffffff; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.8rem;">Technical Specifications</h4>
+      <div id="pmodal-specs" class="specs-pill-group" style="margin-bottom: 2rem;"></div>
+      <div style="display: flex; gap: 1rem;">
+        <a id="pmodal-link" href="#" class="btn-view-details" style="padding: 0.75rem 1.6rem; font-size: 0.85rem;">
+          <span>Launch Project Demo</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer-ecosystem">
+    <div class="footer-content">
+      <div class="footer-col-brand">
+        <div class="footer-brand-header">
+          <a href="index.html" class="nav-logo-badge">
+            <span class="nav-monogram">YA</span>
+          </a>
+          <div>
+            <div class="footer-title">YAFI AHMED</div>
+            <div class="footer-motto">Independent Builder &amp; Aerospace Creator</div>
+          </div>
+        </div>
+        <p class="footer-motto">
+          Architecting autonomous drone platforms, agentic AI swarms, and mission-critical web applications.
+        </p>
+        <div class="footer-location-telemetry">
+          <span>●</span>
+          <span>Dhaka, Bangladesh (UTC+6) • Lab Active</span>
+        </div>
+      </div>
+
+      <div class="footer-col-nav">
+        <div class="footer-heading">Ecosystem Directory</div>
+        <ul class="footer-links-list">
+          <li><a href="index.html">✦ Home (Overview)</a></li>
+          <li><a href="about.html">✦ About Yafi</a></li>
+          <li><a href="techstack.html">✦ Tech Stack &amp; Tools</a></li>
+          <li><a href="projects.html">✦ Project Showcase</a></li>
+          <li><a href="offerings.html">✦ Offerings &amp; Services</a></li>
+          <li><a href="connect.html">✦ Connect &amp; Inquiries</a></li>
+          <li><a href="admin.html" style="color: #c084fc;">🔒 Admin Panel (CMS)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-legal">
+        <div class="footer-heading">Security &amp; Legal</div>
+        <div class="footer-legal-links">
+          <a href="index.html#modal-legal" class="footer-legal-btn">Privacy Policy</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="index.html#modal-legal" class="footer-legal-btn">Terms of Service</a>
+        </div>
+        <button class="btn-back-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+          <span>&uarr;</span>
+          <span>Back to Top</span>
+        </button>
+        <span class="footer-copy">&copy; 2026 Yafi Ahmed. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      let activeFilter = 'all';
+
+      // Auto-hide navbar
+      let lastY = window.pageYOffset || 0;
+      const nav = document.querySelector('.navbar-pill-wrapper');
+      window.addEventListener('scroll', () => {
+        const currY = window.pageYOffset || 0;
+        if (currY > lastY && currY > 120) {
+          if (nav) nav.classList.add('nav-hidden');
+        } else {
+          if (nav) nav.classList.remove('nav-hidden');
+        }
+        lastY = currY <= 0 ? 0 : currY;
+      }, { passive: true });
+
+      function renderProjects() {
+        const grid = document.getElementById('projects-grid');
+        if (!grid || !window.PortfolioData || !window.PortfolioData.data) return;
+
+        const projects = window.PortfolioData.data.projects || [];
+        const filtered = projects.filter(p => {
+          if (activeFilter === 'all') return true;
+          return (p.category + ' ' + p.title).toLowerCase().includes(activeFilter.toLowerCase());
+        });
+
+        grid.innerHTML = filtered.map((p, idx) => `
+          <div class="project-card">
+            <div class="project-media-wrap">
+              <span class="project-badge-float">${p.category}</span>
+              <span class="project-year-float">${p.year || '2025 - 2026'}</span>
+              <img src="${(p.images && p.images[0]) || 'project_drone.jpg'}" alt="${p.title}" class="project-img" />
+              <div class="project-media-overlay"></div>
+            </div>
+            <div class="project-body">
+              <div>
+                <h3 class="project-title">${p.title}</h3>
+                <p class="project-summary">${p.summary}</p>
+                <div class="specs-pill-group">
+                  ${(p.specs || []).map(s => `<span class="spec-pill">${s}</span>`).join('')}
+                </div>
+              </div>
+              <div class="project-actions">
+                <span style="font-size: 0.72rem; color: #4ade80;">● Active Deployment</span>
+                <button class="btn-view-details" onclick="openProjectDetail('${p.id}')">
+                  <span>View Specifications</span>
+                  <span>&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Filter clicks
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter') || 'all';
+          renderProjects();
+        });
+      });
+
+      // Project detail modal
+      const modalDetail = document.getElementById('modal-project-detail');
+      const btnCloseDetail = document.getElementById('btn-close-pdetail');
+
+      window.openProjectDetail = function (projId) {
+        const projects = (window.PortfolioData && window.PortfolioData.data && window.PortfolioData.data.projects) || [];
+        const p = projects.find(item => item.id === projId) || projects[0];
+        if (!p) return;
+
+        document.getElementById('pmodal-cat').textContent = p.category;
+        document.getElementById('pmodal-title').textContent = p.title;
+        document.getElementById('pmodal-img').src = (p.images && p.images[0]) || 'project_drone.jpg';
+        document.getElementById('pmodal-desc').textContent = p.details || p.summary;
+        document.getElementById('pmodal-specs').innerHTML = (p.specs || []).map(s => `<span class="spec-pill">${s}</span>`).join('');
+        const link = document.getElementById('pmodal-link');
+        if (link) link.href = p.liveUrl || '#';
+
+        if (modalDetail) modalDetail.classList.add('active');
+      };
+
+      if (btnCloseDetail && modalDetail) {
+        btnCloseDetail.addEventListener('click', () => modalDetail.classList.remove('active'));
+        modalDetail.addEventListener('click', (e) => {
+          if (e.target === modalDetail) modalDetail.classList.remove('active');
+        });
+      }
+
+      renderProjects();
+      window.addEventListener('yafi_data_updated', renderProjects);
+
+      // Natural Momentum Smooth Scroll (Lenis)
+      if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.15,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          orientation: 'vertical',
+          gestureOrientation: 'vertical',
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.2,
+          infinite: false
+        });
+        window.lenis = lenis;
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+    })();
+  </script>
+  <!-- Floating Draggable Yafi AI Assistant Widget -->
+  <script src="yafi-ai-widget.js"></script>
+</body>
+</html>

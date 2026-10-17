@@ -1,0 +1,9 @@
+*.ps1
+*.bak
+*.txt
+.git
+snap_*
+dom_test*
+test_*
+crop_*
+measure_*

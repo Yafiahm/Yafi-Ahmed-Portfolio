@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect & Inquiries — Yafi Ahmed</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Bebas+Neue&family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Supabase Cloud SDK -->
+  <script src="supabase.min.js"></script>
+  <!-- Data Engine -->
+  <script src="portfolio-data.js"></script>
+  <!-- Natural Momentum Scroll Engine (Lenis) -->
+  <script src="lenis.min.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #060609;
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-purple: #9333ea;
+      --accent-crimson: #e11d48;
+      --cyan-glow: #38bdf8;
+      --font-hero: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: auto !important;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      scrollbar-width: thin;
+      scrollbar-color: #c026d3 #060609;
+    }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    /* CYBER NEON GLOWING CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #060609; border-left: 1px solid rgba(255, 255, 255, 0.05); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
+      border-radius: 9999px;
+      border: 2px solid #060609;
+      box-shadow: 0 0 14px rgba(192, 38, 211, 0.65);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #a855f7 0%, #e879f9 50%, #fb7185 100%);
+      box-shadow: 0 0 22px rgba(244, 63, 94, 0.95);
+    }
+
+    body {
+      background-color: var(--bg-black);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ambient-glow-left {
+      position: fixed;
+      top: 15vh;
+      left: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(147, 51, 234, 0.25) 0%, rgba(88, 28, 135, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-right {
+      position: fixed;
+      top: 20vh;
+      right: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(225, 29, 72, 0.26) 0%, rgba(159, 18, 57, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar-pill-wrapper {
+      position: fixed;
+      top: 1.1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 4.5rem);
+      max-width: 1300px;
+      z-index: 1000;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .navbar-pill-wrapper.nav-hidden {
+      transform: translateX(-50%) translateY(-145%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .navbar-pill {
+      height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14, 14, 20, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 9999px;
+      padding: 0 0.8rem 0 1rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .nav-logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(168, 85, 247, 0.8);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 15, 0.6);
+      text-decoration: none;
+    }
+
+    .nav-monogram {
+      font-family: var(--font-hero);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+
+    .nav-tabs-center {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-tabs-center a {
+      color: var(--text-gray);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.25s ease;
+      position: relative;
+      padding: 0.35rem 0;
+    }
+
+    .nav-tabs-center a:hover,
+    .nav-tabs-center a.active {
+      color: #ffffff;
+    }
+
+    .nav-tabs-center a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 2.5px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.8);
+    }
+
+    .nav-auth-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-btn-signin {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #d1d5db;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.42rem 1.15rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn-signup {
+      background: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.48rem 1.35rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(192, 38, 211, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    /* MAIN PAGE CONTENT */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 7.5rem 2rem 5rem 2rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .page-header {
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .page-tag {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #38bdf8;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #38bdf8;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      margin-bottom: 0.8rem;
+    }
+
+    .page-subtitle {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: #94a3b8;
+      max-width: 780px;
+      line-height: 1.6;
+    }
+
+    /* SPLIT GRID */
+    .connect-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: rgba(14, 14, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
+    }
+
+    .form-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .form-title span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 10px #38bdf8;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .field-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.03em;
+    }
+
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.05);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .field-select option {
+      background: #0f0f17;
+      color: #ffffff;
+    }
+
+    .field-textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .btn-submit-transmission {
+      width: 100%;
+      background: linear-gradient(100deg, #4f46e5 0%, #7c3aed 40%, #c026d3 70%, #e11d48 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.95rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit-transmission:hover {
+      box-shadow: 0 8px 30px rgba(225, 29, 72, 0.7);
+      transform: translateY(-2px);
+    }
+
+    /* RIGHT TELEMETRY & CHANNELS COLUMN */
+    .channels-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .telemetry-card {
+      background: rgba(14, 14, 22, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+
+    .telemetry-head {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .live-clock-box {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .clock-time {
+      font-family: var(--font-hero);
+      font-size: 2.6rem;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .clock-zone {
+      font-size: 0.72rem;
+      color: #38bdf8;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .social-channel-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      margin-bottom: 0.65rem;
+      transition: all 0.2s ease;
+    }
+
+    .social-channel-item:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: rgba(168, 85, 247, 0.06);
+    }
+
+    .channel-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .channel-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .channel-handle {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    .channel-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action-copy {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-copy:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: #a855f7;
+      color: #ffffff;
+    }
+
+    .btn-action-visit {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(225, 29, 72, 0.25));
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #ffffff;
+      border-radius: 6px;
+      padding: 5px 9px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-visit:hover {
+      background: linear-gradient(135deg, #a855f7, #e11d48);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+    }
+
+    /* TOAST */
+    .copy-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f0a1c;
+      border: 1px solid #a855f7;
+      color: #ffffff;
+      padding: 0.6rem 1.1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(15px);
+      transition: all 0.3s ease;
+      z-index: 9999;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* FOOTER */
+    .footer-ecosystem {
+      width: 100%;
+      padding: 3.5rem 4vw 2.8rem 4vw;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 8, 12, 0.95);
+      position: relative;
+      z-index: 15;
+    }
+
+    .footer-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1.1fr;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .footer-col-brand { display: flex; flex-direction: column; gap: 0.85rem; }
+    .footer-brand-header { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-title { font-size: 1rem; font-weight: 800; color: #ffffff; letter-spacing: 0.05em; }
+    .footer-motto { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .footer-location-telemetry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .footer-col-nav { display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-heading { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #c084fc; margin-bottom: 0.3rem; }
+    .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links-list a { color: #94a3b8; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease; }
+    .footer-links-list a:hover { color: #ffffff; transform: translateX(3px); }
+
+    .footer-col-legal { display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-end; text-align: right; }
+    .footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: flex-end; }
+    .footer-legal-btn { background: transparent; border: none; color: #94a3b8; font-size: 0.76rem; cursor: pointer; text-decoration: underline; }
+    .footer-copy { font-size: 0.74rem; color: #64748b; }
+    .btn-back-top {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #cbd5e1;
+      border-radius: 9999px;
+      padding: 7px 16px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+    .btn-back-top:hover { border-color: #a855f7; color: #ffffff; background: rgba(168, 85, 247, 0.2); }
+
+    /* Button ripples */
+    button, a.btn-action-visit, .nav-btn-signin, .nav-btn-signup, .btn-back-top {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    button:active, .nav-btn-signin:active, .nav-btn-signup:active {
+      transform: scale(0.94) !important;
+    }
+    .btn-ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: btnRippleAnim 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(56, 189, 248, 0.35) 50%, transparent 75%);
+      pointer-events: none;
+    }
+    @keyframes btnRippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    @media (max-width: 900px) {
+      .connect-grid { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-col-legal { align-items: flex-start; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow-left"></div>
+  <div class="ambient-glow-right"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar-pill-wrapper">
+    <nav class="navbar-pill">
+      <a href="index.html" class="nav-logo-badge">
+        <span class="nav-monogram">YA</span>
+      </a>
+
+      <ul class="nav-tabs-center">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="ai-assistant.html">AI Studio</a></li>
+        <li><a href="techstack.html">Tech Stack</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="offerings.html">Offerings</a></li>
+        <li><a href="connect.html" class="active">Connect</a></li>
+      </ul>
+
+      <div class="nav-auth-group">
+        <a href="connect.html" class="nav-btn-signin">Inquiries</a>
+        <a href="projects.html" class="nav-btn-signup">Projects &rarr;</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-wrapper">
+    <div class="page-header">
+      <div class="page-tag">Secure Communication Link</div>
+      <h1 class="page-title">Connect &amp; Technical Inquiries</h1>
+      <p class="page-subtitle">
+        Whether you require an autonomous drone swarm proof-of-concept, an edge machine learning pipeline, or architecture consulting, direct your transmissions here.
+      </p>
+    </div>
+
+    <div class="connect-grid">
+      <!-- LEFT FORM -->
+      <section class="form-card">
+        <h2 class="form-title"><span class="dot"></span>Transmit Project Specification</h2>
+        <form id="inquiry-form" onsubmit="event.preventDefault(); handleFormSubmit();">
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Your Name / Organization</label>
+              <input type="text" class="field-input" id="inq-name" placeholder="e.g. Dr. Jennifer Stone" required />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Contact Email</label>
+              <input type="email" class="field-input" id="inq-email" placeholder="jennifer@aerolab.io" required />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Domain of Interest</label>
+              <select class="field-select" id="inq-domain">
+                <option value="drone">Autonomous Drone Navigation &amp; SLAM</option>
+                <option value="ai">Agentic AI Swarms &amp; Vector RAG</option>
+                <option value="web">High-Velocity 3D Web Ecosystems</option>
+                <option value="sprint">4-Week Deep-Tech Prototype Sprint</option>
+                <option value="other">Other Technical Collaboration</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Target Launch / Timeline</label>
+              <select class="field-select" id="inq-timeline">
+                <option value="immediate">Immediate (&lt; 30 Days)</option>
+                <option value="q1">Within 1-3 Months</option>
+                <option value="flexible">Exploratory / Research</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">System Requirements &amp; Scope</label>
+            <textarea class="field-textarea" id="inq-msg" placeholder="Describe the hardware constraints, telemetry goals, or algorithmic challenges..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit-transmission">
+            <span>Send Transmission</span>
+            <span>⟶</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- RIGHT CHANNELS & TELEMETRY -->
+      <aside class="channels-column">
+        <!-- Live Telemetry Card -->
+        <div class="telemetry-card">
+          <div class="telemetry-head">
+            <span>●</span>
+            <span>Local Base Telemetry</span>
+          </div>
+
+          <div class="live-clock-box">
+            <div class="clock-time" id="live-time">00:00:00</div>
+            <div class="clock-zone">DHAKA, BANGLADESH (UTC+6)</div>
+          </div>
+
+          <div style="font-size: 0.78rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-gray);">Average Response:</span>
+              <span style="color: #4ade80; font-family: monospace;">&lt; 4 Hours</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-gray);">Channel Security:</span>
+              <span style="color: #38bdf8; font-family: monospace;">TLS 1.3 Verified</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="color: var(--text-gray);">Lab Readiness:</span>
+              <span style="color: #c084fc; font-family: monospace;">Active Prototyping</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Social Channels -->
+        <div class="telemetry-card">
+          <div class="telemetry-head">
+            <span>●</span>
+            <span>Direct Handles &amp; Links</span>
+          </div>
+
+          <div id="social-channels-container">
+            <!-- Dynamically populated from PortfolioData -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Floating Toast -->
+  <div class="copy-toast" id="copy-toast">
+    <span>✓</span>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer-ecosystem">
+    <div class="footer-content">
+      <div class="footer-col-brand">
+        <div class="footer-brand-header">
+          <a href="index.html" class="nav-logo-badge">
+            <span class="nav-monogram">YA</span>
+          </a>
+          <div>
+            <div class="footer-title">YAFI AHMED</div>
+            <div class="footer-motto">Independent Builder &amp; Aerospace Creator</div>
+          </div>
+        </div>
+        <p class="footer-motto">
+          Architecting autonomous drone platforms, agentic AI swarms, and mission-critical web applications.
+        </p>
+        <div class="footer-location-telemetry">
+          <span>●</span>
+          <span>Dhaka, Bangladesh (UTC+6) • Lab Active</span>
+        </div>
+      </div>
+
+      <div class="footer-col-nav">
+        <div class="footer-heading">Ecosystem Directory</div>
+        <ul class="footer-links-list">
+          <li><a href="index.html">✦ Home (Overview)</a></li>
+          <li><a href="about.html">✦ About Yafi</a></li>
+          <li><a href="techstack.html">✦ Tech Stack &amp; Tools</a></li>
+          <li><a href="projects.html">✦ Project Showcase</a></li>
+          <li><a href="offerings.html">✦ Offerings &amp; Services</a></li>
+          <li><a href="connect.html">✦ Connect &amp; Inquiries</a></li>
+          <li><a href="admin.html" style="color: #c084fc;">🔒 Admin Panel (CMS)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-legal">
+        <div class="footer-heading">Security &amp; Legal</div>
+        <div class="footer-legal-links">
+          <a href="index.html#modal-legal" class="footer-legal-btn">Privacy Policy</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="index.html#modal-legal" class="footer-legal-btn">Terms of Service</a>
+        </div>
+        <button class="btn-back-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+          <span>&uarr;</span>
+          <span>Back to Top</span>
+        </button>
+        <span class="footer-copy">&copy; 2026 Yafi Ahmed. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // Live Dhaka Clock
+      function updateClock() {
+        const now = new Date();
+        const options = { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const timeStr = new Intl.DateTimeFormat([], options).format(now);
+        const clockEl = document.getElementById('live-time');
+        if (clockEl) clockEl.textContent = timeStr;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Auto-hide navbar
+      let lastY = window.pageYOffset || 0;
+      const nav = document.querySelector('.navbar-pill-wrapper');
+      window.addEventListener('scroll', () => {
+        const currY = window.pageYOffset || 0;
+        if (currY > lastY && currY > 120) {
+          if (nav) nav.classList.add('nav-hidden');
+        } else {
+          if (nav) nav.classList.remove('nav-hidden');
+        }
+        lastY = currY <= 0 ? 0 : currY;
+      }, { passive: true });
+
+      // Toast feedback
+      const toast = document.getElementById('copy-toast');
+      const toastMsg = document.getElementById('toast-msg');
+      let timer = null;
+      function showToast(text) {
+        if (!toast) return;
+        if (toastMsg) toastMsg.textContent = text;
+        toast.classList.add('show');
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      window.copyHandle = function (handle, btn) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(handle).then(() => {
+            showToast(`Copied "${handle}" to clipboard!`);
+            const old = btn.textContent;
+            btn.textContent = '✓';
+            setTimeout(() => btn.textContent = old, 1600);
+          });
+        }
+      };
+
+      // Form submission with live Supabase persistence
+      window.handleFormSubmit = async function () {
+        const name = (document.getElementById('inq-name').value || '').trim();
+        const email = (document.getElementById('inq-email').value || '').trim();
+        const subject = (document.getElementById('inq-subject').value || '').trim();
+        const message = (document.getElementById('inq-msg').value || '').trim();
+
+        const client = window.PortfolioData ? window.PortfolioData.getClient() : null;
+        if (client) {
+          try {
+            await client.from('contact_inquiries').insert([
+              { name: name || 'Anonymous', email: email || 'No email', subject: subject || 'General Inquiry', message: message || 'No message' }
+            ]);
+          } catch (e) {
+            console.warn('Inquiry local fallback:', e);
+          }
+        }
+
+        showToast(`Transmission received, ${name || 'Explorer'}! We will reply within 4 hours.`);
+        const form = document.getElementById('inquiry-form');
+        if (form) form.reset();
+      };
+
+      // Populate Socials from PortfolioData
+      function renderSocials() {
+        const container = document.getElementById('social-channels-container');
+        if (!container || !window.PortfolioData || !window.PortfolioData.data) return;
+
+        const s = window.PortfolioData.data.socials || {};
+        const items = [
+          { name: 'GitHub', handle: s.github ? s.github.handle : '@yafi-ahmed', url: s.github ? s.github.url : 'https://github.com' },
+          { name: 'X / Twitter', handle: s.x ? s.x.handle : '@yafi_ahmed', url: s.x ? s.x.url : 'https://twitter.com' },
+          { name: 'WhatsApp', handle: s.whatsapp ? s.whatsapp.handle : '+880 1800 000000', url: s.whatsapp ? s.whatsapp.url : 'https://wa.me/' },
+          { name: 'Discord', handle: s.discord ? s.discord.handle : 'yafiahmed#0001', url: s.discord ? s.discord.url : 'https://discord.com' },
+          { name: 'LinkedIn', handle: s.linkedin ? s.linkedin.handle : 'yafi-ahmed', url: s.linkedin ? s.linkedin.url : 'https://linkedin.com' },
+          { name: 'Fiverr', handle: s.fiverr ? s.fiverr.handle : '@yafi_ahmed', url: s.fiverr ? s.fiverr.url : 'https://fiverr.com' }
+        ];
+
+        container.innerHTML = items.map(item => `
+          <div class="social-channel-item">
+            <div class="channel-meta">
+              <span class="channel-name">${item.name}</span>
+              <span class="channel-handle">${item.handle}</span>
+            </div>
+            <div class="channel-actions">
+              <button class="btn-action-copy" onclick="copyHandle('${item.handle}', this)">Copy</button>
+              <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn-action-visit">Visit &#x2197;</a>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderSocials();
+      window.addEventListener('yafi_data_updated', renderSocials);
+
+      // Natural Momentum Smooth Scroll (Lenis)
+      if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.15,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          orientation: 'vertical',
+          gestureOrientation: 'vertical',
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.2,
+          infinite: false
+        });
+        window.lenis = lenis;
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+    })();
+  </script>
+  <!-- Floating Draggable Yafi AI Assistant Widget -->
+  <script src="yafi-ai-widget.js"></script>
+</body>
+</html>

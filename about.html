@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Yafi Ahmed — Aerospace Creator & Systems Architect</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Bebas+Neue&family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Data Engine -->
+  <script src="portfolio-data.js"></script>
+  <!-- Natural Momentum Scroll Engine (Lenis) -->
+  <script src="lenis.min.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #060609;
+      --bg-card: rgba(16, 16, 24, 0.75);
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-purple: #9333ea;
+      --accent-crimson: #e11d48;
+      --cyan-glow: #38bdf8;
+      --font-hero: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: auto !important;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      scrollbar-width: thin;
+      scrollbar-color: #c026d3 #060609;
+    }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    /* CYBER NEON GLOWING CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #060609; border-left: 1px solid rgba(255, 255, 255, 0.05); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
+      border-radius: 9999px;
+      border: 2px solid #060609;
+      box-shadow: 0 0 14px rgba(192, 38, 211, 0.65);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #a855f7 0%, #e879f9 50%, #fb7185 100%);
+      box-shadow: 0 0 22px rgba(244, 63, 94, 0.95);
+    }
+
+    body {
+      background-color: var(--bg-black);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Background Ambient Glows */
+    .ambient-glow-left {
+      position: fixed;
+      top: 15vh;
+      left: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(147, 51, 234, 0.25) 0%, rgba(88, 28, 135, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-right {
+      position: fixed;
+      top: 20vh;
+      right: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(225, 29, 72, 0.26) 0%, rgba(159, 18, 57, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar-pill-wrapper {
+      position: fixed;
+      top: 1.1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 4.5rem);
+      max-width: 1300px;
+      z-index: 1000;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .navbar-pill-wrapper.nav-hidden {
+      transform: translateX(-50%) translateY(-145%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .navbar-pill {
+      height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14, 14, 20, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 9999px;
+      padding: 0 0.8rem 0 1rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .nav-logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(168, 85, 247, 0.8);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 15, 0.6);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .nav-monogram {
+      font-family: var(--font-hero);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+
+    .nav-tabs-center {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-tabs-center a {
+      color: var(--text-gray);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.25s ease;
+      position: relative;
+      padding: 0.35rem 0;
+    }
+
+    .nav-tabs-center a:hover,
+    .nav-tabs-center a.active {
+      color: #ffffff;
+    }
+
+    .nav-tabs-center a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 2.5px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.8);
+    }
+
+    .nav-auth-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-btn-signin {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #d1d5db;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.42rem 1.15rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn-signup {
+      background: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.48rem 1.35rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(192, 38, 211, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    /* MAIN CONTENT */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 7.5rem 2rem 5rem 2rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .page-header {
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .page-tag {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c084fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #c084fc;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #c084fc;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      margin-bottom: 0.8rem;
+    }
+
+    .page-subtitle {
+      font-size: clamp(1rem, 1.8vw, 1.25rem);
+      background: linear-gradient(90deg, #c084fc, #f43f5e, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* SPLIT ABOUT GRID */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+
+    /* LEFT PROFILE CARD */
+    .profile-card {
+      background: rgba(14, 14, 22, 0.85);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(168, 85, 247, 0.15);
+      position: sticky;
+      top: 6rem;
+      text-align: center;
+    }
+
+    .profile-avatar-wrap {
+      width: 170px;
+      height: 170px;
+      margin: 0 auto 1.5rem auto;
+      border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, #7c3aed, #c026d3, #e11d48);
+      box-shadow: 0 0 25px rgba(192, 38, 211, 0.5);
+    }
+
+    .profile-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #09090e;
+    }
+
+    .profile-name {
+      font-family: var(--font-hero);
+      font-size: 2.2rem;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      margin-bottom: 0.2rem;
+    }
+
+    .profile-role {
+      font-size: 0.85rem;
+      color: #a855f7;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .profile-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      padding: 1.2rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .stat-val {
+      font-family: var(--font-hero);
+      font-size: 1.8rem;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .profile-telemetry {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+      font-size: 0.76rem;
+      color: #cbd5e1;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    }
+
+    .telemetry-row:last-child {
+      border-bottom: none;
+    }
+
+    .telemetry-val {
+      color: #38bdf8;
+      font-family: monospace;
+    }
+
+    /* RIGHT STORY COLUMN */
+    .story-column {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .story-block {
+      background: rgba(14, 14, 22, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 2.2rem;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease;
+    }
+
+    .story-block:hover {
+      border-color: rgba(168, 85, 247, 0.35);
+    }
+
+    .block-heading {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .block-heading span.block-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c026d3;
+      box-shadow: 0 0 10px #c026d3;
+    }
+
+    .story-p {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .story-p:last-child {
+      margin-bottom: 0;
+    }
+
+    .quote-callout {
+      border-left: 3px solid #c026d3;
+      padding: 1rem 1.4rem;
+      background: rgba(192, 38, 211, 0.06);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: #f1f5f9;
+      font-size: 0.95rem;
+      margin: 1.5rem 0;
+      line-height: 1.6;
+    }
+
+    /* PILLARS GRID */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .pillar-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 1.4rem;
+      transition: all 0.25s ease;
+    }
+
+    .pillar-card:hover {
+      background: rgba(168, 85, 247, 0.08);
+      border-color: rgba(168, 85, 247, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .pillar-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .pillar-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+
+    .pillar-desc {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* MILESTONES TIMELINE */
+    .timeline-wrap {
+      position: relative;
+      padding-left: 1.8rem;
+      border-left: 2px solid rgba(168, 85, 247, 0.3);
+      margin-top: 1.5rem;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-node {
+      position: absolute;
+      left: -2.35rem;
+      top: 0.15rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #9333ea;
+      border: 3px solid #060609;
+      box-shadow: 0 0 10px #9333ea;
+    }
+
+    .timeline-year {
+      font-family: var(--font-hero);
+      font-size: 1.15rem;
+      color: #38bdf8;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .timeline-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.3rem;
+    }
+
+    .timeline-text {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* CTAS */
+    .about-cta-row {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 2rem;
+    }
+
+    .btn-cta-primary {
+      background: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+      color: #ffffff;
+      padding: 0.85rem 1.8rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 20px rgba(192, 38, 211, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    .btn-cta-primary:hover {
+      box-shadow: 0 6px 30px rgba(244, 63, 94, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .btn-cta-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 0.85rem 1.8rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cta-secondary:hover {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    /* FOOTER */
+    .footer-ecosystem {
+      width: 100%;
+      padding: 3.5rem 4vw 2.8rem 4vw;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 8, 12, 0.95);
+      position: relative;
+      z-index: 15;
+    }
+
+    .footer-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1.1fr;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .footer-col-brand { display: flex; flex-direction: column; gap: 0.85rem; }
+    .footer-brand-header { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-title { font-size: 1rem; font-weight: 800; color: #ffffff; letter-spacing: 0.05em; }
+    .footer-motto { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .footer-location-telemetry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .footer-col-nav { display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-heading { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #c084fc; margin-bottom: 0.3rem; }
+    .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links-list a { color: #94a3b8; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease; }
+    .footer-links-list a:hover { color: #ffffff; transform: translateX(3px); }
+
+    .footer-col-legal { display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-end; text-align: right; }
+    .footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: flex-end; }
+    .footer-legal-btn { background: transparent; border: none; color: #94a3b8; font-size: 0.76rem; cursor: pointer; text-decoration: underline; }
+    .footer-copy { font-size: 0.74rem; color: #64748b; }
+    .btn-back-top {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #cbd5e1;
+      border-radius: 9999px;
+      padding: 7px 16px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+    .btn-back-top:hover { border-color: #a855f7; color: #ffffff; background: rgba(168, 85, 247, 0.2); }
+
+    /* Tactile button micro-interactions */
+    button, a.btn-cta-primary, a.btn-cta-secondary, .nav-btn-signin, .nav-btn-signup, .btn-back-top {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    button:active, a.btn-cta-primary:active, a.btn-cta-secondary:active, .nav-btn-signin:active, .nav-btn-signup:active {
+      transform: scale(0.94) !important;
+    }
+    .btn-ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: btnRippleAnim 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(192, 38, 211, 0.35) 50%, transparent 75%);
+      pointer-events: none;
+    }
+    @keyframes btnRippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .profile-card { position: static; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-col-legal { align-items: flex-start; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient background glow -->
+  <div class="ambient-glow-left"></div>
+  <div class="ambient-glow-right"></div>
+
+  <!-- FLOATING NAVBAR -->
+  <header class="navbar-pill-wrapper">
+    <nav class="navbar-pill">
+      <a href="index.html" class="nav-logo-badge">
+        <span class="nav-monogram">YA</span>
+      </a>
+
+      <ul class="nav-tabs-center">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="ai-assistant.html">AI Studio</a></li>
+        <li><a href="techstack.html">Tech Stack</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="offerings.html">Offerings</a></li>
+        <li><a href="connect.html">Connect</a></li>
+      </ul>
+
+      <div class="nav-auth-group">
+        <a href="connect.html" class="nav-btn-signin">Get in Touch</a>
+        <a href="projects.html" class="nav-btn-signup">Projects &rarr;</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-tag">Biography &amp; Architecture</div>
+      <h1 class="page-title">Curiosity drives me.<br/>Creation defines me.</h1>
+      <p class="page-subtitle">Aerospace Systems Engineer • Autonomous Hardware Hacker • Full-Stack Builder</p>
+    </div>
+
+    <!-- Split Grid -->
+    <div class="about-grid">
+      <!-- Left: Profile Telemetry Card -->
+      <aside class="profile-card">
+        <div class="profile-avatar-wrap">
+          <img src="ezgif-6e1d808a771bb499-png-split/ezgif-frame-001.png" alt="Yafi Ahmed" class="profile-avatar-img" id="about-avatar" />
+        </div>
+        <h2 class="profile-name">YAFI AHMED</h2>
+        <div class="profile-role">Aerospace Software &amp; AI Architect</div>
+
+        <div class="profile-stats-grid">
+          <div class="stat-box">
+            <span class="stat-val" id="stat-exp">4+</span>
+            <span class="stat-label">Years Exp</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="stat-builds">24+</span>
+            <span class="stat-label">Builds</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val" id="stat-hours">1,200+</span>
+            <span class="stat-label">Flight Hrs</span>
+          </div>
+        </div>
+
+        <div class="profile-telemetry">
+          <div class="telemetry-row">
+            <span>Base Station:</span>
+            <span class="telemetry-val">Dhaka, BD (UTC+6)</span>
+          </div>
+          <div class="telemetry-row">
+            <span>Primary Focus:</span>
+            <span class="telemetry-val">Drone RTOS &amp; Swarms</span>
+          </div>
+          <div class="telemetry-row">
+            <span>Hardware Lab:</span>
+            <span class="telemetry-val">Active / Calibration</span>
+          </div>
+          <div class="telemetry-row">
+            <span>Status:</span>
+            <span class="telemetry-val" style="color: #4ade80;">● Available for Contract</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: Narrative Story Column -->
+      <div class="story-column">
+        <!-- Story Block 1 -->
+        <article class="story-block">
+          <h3 class="block-heading"><span class="block-dot"></span>The Intersection of Atoms &amp; Bits</h3>
+          <p class="story-p" id="about-bio-p1">
+            I am an independent aerospace software engineer, hardware hacker, and full-stack system architect based in Dhaka, Bangladesh. I specialize in building autonomous drone navigation platforms, agentic AI systems, and mission-critical web ecosystems from scratch.
+          </p>
+          <div class="quote-callout">
+            "Hardware without intelligent software is just a silent sculpture. Software without physical actuators is merely an abstract simulation. True magic ignites at the low-latency boundary where code commands physical flight."
+          </div>
+          <p class="story-p" id="about-bio-p2">
+            Rather than treating software and hardware as separate realms, I bridge physical mechanics with distributed intelligence—from custom flight controllers and low-latency motor telemetry to neural network inference on edge microprocessors.
+          </p>
+        </article>
+
+        <!-- Story Block 2: Engineering Pillars -->
+        <article class="story-block">
+          <h3 class="block-heading"><span class="block-dot"></span>Core Engineering Pillars</h3>
+          <div class="pillars-grid">
+            <div class="pillar-card">
+              <div class="pillar-icon">🚁</div>
+              <div class="pillar-title">Autonomous Drone Navigation</div>
+              <div class="pillar-desc">GPS-denied visual SLAM, PX4/ArduPilot custom RTOS firmware, obstacle clearance running edge YOLOv8 on Jetson Orin.</div>
+            </div>
+            <div class="pillar-card">
+              <div class="pillar-icon">🧠</div>
+              <div class="pillar-title">Agentic AI Swarms</div>
+              <div class="pillar-desc">Autonomous multi-agent architectures, stateful tool-calling MCP integrations, streaming vector memory with Supabase pgvector.</div>
+            </div>
+            <div class="pillar-card">
+              <div class="pillar-icon">🚀</div>
+              <div class="pillar-title">Aerospace Concept Engineering</div>
+              <div class="pillar-desc">Real-time orbital dynamics simulation, high-altitude aerodynamic models, and luminous cockpit telemetry HUD interfaces.</div>
+            </div>
+            <div class="pillar-card">
+              <div class="pillar-icon">⚡</div>
+              <div class="pillar-title">High-Velocity Full Stack</div>
+              <div class="pillar-desc">Sub-second Next.js edge deployments, continuous 60FPS canvas visual scrubbers, and hardened real-time WebSockets.</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Story Block 3: Timeline Journey -->
+        <article class="story-block">
+          <h3 class="block-heading"><span class="block-dot"></span>Evolution &amp; Milestones</h3>
+          <div class="timeline-wrap">
+            <div class="timeline-item">
+              <div class="timeline-node"></div>
+              <div class="timeline-year">2026 — PRESENT</div>
+              <div class="timeline-title">Autonomous Aerial Systems &amp; Multi-Agent Swarms</div>
+              <div class="timeline-text">Engineering decentralized edge swarms where aerial vehicles cooperate in real-time, sharing map meshes and computing neural inference on the fly.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-node"></div>
+              <div class="timeline-year">2025</div>
+              <div class="timeline-title">Next-Gen Spacecraft Simulation &amp; Orivino SaaS</div>
+              <div class="timeline-text">Architected real-time orbital trajectory simulations and deployed Orivino enterprise restaurant OS for boutique hospitality groups.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-node"></div>
+              <div class="timeline-year">2024</div>
+              <div class="timeline-title">Autonomous SLAM Flight Controller Deployment</div>
+              <div class="timeline-text">Successfully completed 500+ hours of GPS-denied obstacle clearance flight tests utilizing stereo vision and edge TPUs.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-node"></div>
+              <div class="timeline-year">2023</div>
+              <div class="timeline-title">Foundations in Embedded C++ &amp; WebGL Engines</div>
+              <div class="timeline-text">Mastered low-level motor telemetry protocols, microcontroller firmware, and high-performance hardware-accelerated browser visuals.</div>
+            </div>
+          </div>
+
+          <div class="about-cta-row">
+            <a href="projects.html" class="btn-cta-primary">
+              <span>Explore My Work</span>
+              <span>&rarr;</span>
+            </a>
+            <a href="connect.html" class="btn-cta-secondary">
+              <span>Initiate Contact</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer-ecosystem">
+    <div class="footer-content">
+      <div class="footer-col-brand">
+        <div class="footer-brand-header">
+          <a href="index.html" class="nav-logo-badge">
+            <span class="nav-monogram">YA</span>
+          </a>
+          <div>
+            <div class="footer-title">YAFI AHMED</div>
+            <div class="footer-motto">Independent Builder &amp; Aerospace Creator</div>
+          </div>
+        </div>
+        <p class="footer-motto">
+          Architecting autonomous drone platforms, agentic AI swarms, and mission-critical web applications.
+        </p>
+        <div class="footer-location-telemetry">
+          <span>●</span>
+          <span>Dhaka, Bangladesh (UTC+6) • Lab Active</span>
+        </div>
+      </div>
+
+      <div class="footer-col-nav">
+        <div class="footer-heading">Ecosystem Directory</div>
+        <ul class="footer-links-list">
+          <li><a href="index.html">✦ Home (Overview)</a></li>
+          <li><a href="about.html">✦ About Yafi</a></li>
+          <li><a href="techstack.html">✦ Tech Stack &amp; Tools</a></li>
+          <li><a href="projects.html">✦ Project Showcase</a></li>
+          <li><a href="offerings.html">✦ Offerings &amp; Services</a></li>
+          <li><a href="connect.html">✦ Connect &amp; Inquiries</a></li>
+          <li><a href="admin.html" style="color: #c084fc;">🔒 Admin Panel (CMS)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-legal">
+        <div class="footer-heading">Security &amp; Legal</div>
+        <div class="footer-legal-links">
+          <a href="index.html#modal-legal" class="footer-legal-btn">Privacy Policy</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="index.html#modal-legal" class="footer-legal-btn">Terms of Service</a>
+        </div>
+        <button class="btn-back-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
+          <span>&uarr;</span>
+          <span>Back to Top</span>
+        </button>
+        <span class="footer-copy">&copy; 2026 Yafi Ahmed. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Auto-hide navbar on scroll
+    (function () {
+      let lastY = window.pageYOffset || 0;
+      const nav = document.querySelector('.navbar-pill-wrapper');
+      window.addEventListener('scroll', () => {
+        const currY = window.pageYOffset || 0;
+        if (currY > lastY && currY > 120) {
+          if (nav) nav.classList.add('nav-hidden');
+        } else {
+          if (nav) nav.classList.remove('nav-hidden');
+        }
+        lastY = currY <= 0 ? 0 : currY;
+      }, { passive: true });
+
+      // Tactile button ripples
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('button, a.btn-cta-primary, a.btn-cta-secondary, .nav-btn-signin, .nav-btn-signup, .btn-back-top');
+        if (!btn) return;
+        const rect = btn.getBoundingClientRect();
+        const circle = document.createElement('span');
+        const diameter = Math.max(rect.width, rect.height);
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${e.clientX - rect.left - diameter / 2}px`;
+        circle.style.top = `${e.clientY - rect.top - diameter / 2}px`;
+        circle.classList.add('btn-ripple-wave');
+        const prev = btn.querySelector('.btn-ripple-wave');
+        if (prev) prev.remove();
+        btn.appendChild(circle);
+        setTimeout(() => circle.remove(), 650);
+      });
+
+      // Synchronize with Portfolio Data
+      function syncAboutData() {
+        if (!window.PortfolioData || !window.PortfolioData.data) return;
+        const d = window.PortfolioData.data;
+        const p1 = document.getElementById('about-bio-p1');
+        if (p1 && d.about.bioP1) p1.textContent = d.about.bioP1;
+        const p2 = document.getElementById('about-bio-p2');
+        if (p2 && d.about.bioP2) p2.textContent = d.about.bioP2;
+        const exp = document.getElementById('stat-exp');
+        if (exp && d.about.yearsExperience) exp.textContent = d.about.yearsExperience;
+        const blds = document.getElementById('stat-builds');
+        if (blds && d.about.completedBuilds) blds.textContent = d.about.completedBuilds;
+        const hrs = document.getElementById('stat-hours');
+        if (hrs && d.about.flightHours) hrs.textContent = d.about.flightHours;
+      }
+      syncAboutData();
+      window.addEventListener('yafi_data_updated', syncAboutData);
+
+      // Natural Momentum Smooth Scroll (Lenis)
+      if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.15,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          orientation: 'vertical',
+          gestureOrientation: 'vertical',
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.2,
+          infinite: false
+        });
+        window.lenis = lenis;
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+    })();
+  </script>
+  <!-- Floating Draggable Yafi AI Assistant Widget -->
+  <script src="yafi-ai-widget.js"></script>
+</body>
+</html>

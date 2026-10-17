@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMS Admin Console — Yafi Ahmed Portfolio</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Bebas+Neue&family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Data Engine -->
+  <script src="portfolio-data.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #060609;
+      --bg-surface: #0e0e16;
+      --bg-card: rgba(18, 18, 28, 0.85);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.4);
+      --accent-purple: #9333ea;
+      --accent-crimson: #e11d48;
+      --cyan-glow: #38bdf8;
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --font-hero: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      scrollbar-width: thin;
+      scrollbar-color: #c026d3 #060609;
+    }
+
+    /* CYBER SCROLLBAR */
+    ::-webkit-scrollbar { width: 9px; }
+    ::-webkit-scrollbar-track { background: #060609; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea, #e11d48);
+      border-radius: 9999px;
+    }
+
+    body {
+      background-color: var(--bg-black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glows */
+    .bg-glow-1 {
+      position: fixed;
+      top: 10vh;
+      left: -15vw;
+      width: 50vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(147, 51, 234, 0.22) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow-2 {
+      position: fixed;
+      bottom: 5vh;
+      right: -15vw;
+      width: 50vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(225, 29, 72, 0.22) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* LIVE PREVIEW DOCK */
+    .admin-preview-dock {
+      background: rgba(14, 14, 24, 0.75);
+      border: 1px solid rgba(168, 85, 247, 0.28);
+      border-radius: 18px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1.4rem;
+      position: sticky;
+      top: 5.5rem;
+      height: calc(100vh - 7.5rem);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .preview-dock-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .dock-header-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #cbd5e1;
+      text-transform: uppercase;
+    }
+
+    .live-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
+      animation: pulse-live 1.8s infinite;
+    }
+
+    @keyframes pulse-live {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+
+    .preview-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 3px 8px;
+      border-radius: 9999px;
+    }
+
+    .preview-card-frame {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* PREVIEW CARD STYLING */
+    .prev-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.2rem;
+      transition: all 0.25s ease;
+    }
+    .prev-tag {
+      font-size: 0.65rem;
+      color: #38bdf8;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .prev-title {
+      font-size: 1.15rem;
+      color: #ffffff;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .prev-desc {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .prev-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .prev-stat-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 0.6rem;
+      text-align: center;
+    }
+    .prev-stat-num {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #c084fc;
+    }
+    .prev-stat-lbl {
+      font-size: 0.62rem;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* DEVICE IMAGE UPLOAD & CROPPER MODAL */
+    .btn-device-upload {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #e9d5ff;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      margin-top: 0.4rem;
+    }
+    .btn-device-upload:hover {
+      background: rgba(168, 85, 247, 0.3);
+      border-color: #c084fc;
+      color: #ffffff;
+    }
+
+    .cropper-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 4, 8, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+      padding: 1.5rem;
+    }
+    .cropper-modal-overlay.active {
+      display: flex;
+    }
+    .cropper-modal-box {
+      background: #0d0d18;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      padding: 1.8rem;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95);
+      position: relative;
+    }
+    .cropper-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .cropper-header h3 {
+      font-size: 1.1rem;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .btn-close-cropper {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .cropper-canvas-wrap {
+      width: 100%;
+      height: 320px;
+      background: #05050a;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: grab;
+    }
+    .cropper-canvas-wrap:active {
+      cursor: grabbing;
+    }
+    .cropper-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 1.2rem 0;
+      font-size: 0.78rem;
+      color: #cbd5e1;
+    }
+    .cropper-toolbar input[type="range"] {
+      flex: 1;
+      accent-color: #a855f7;
+    }
+    .btn-crop-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .cropper-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .btn-crop-apply {
+      background: linear-gradient(135deg, #7c3aed, #c026d3, #e11d48);
+      color: #ffffff;
+      border: none;
+      padding: 0.65rem 1.4rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(192, 38, 211, 0.4);
+    }
+
+    /* TOP HEADER BAR */
+    .admin-header {
+      background: rgba(14, 14, 22, 0.85);
+      border-bottom: 1px solid var(--border-color);
+      backdrop-filter: blur(20px);
+      padding: 1rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-badge {
+      font-family: var(--font-hero);
+      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.5px solid #a855f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(168, 85, 247, 0.15);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.5);
+    }
+
+    .admin-title-wrap h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .admin-title-wrap span {
+      font-size: 0.72rem;
+      color: #38bdf8;
+      font-family: monospace;
+    }
+
+    .admin-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .btn-action-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: #cbd5e1;
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-action-pill:hover {
+      border-color: #a855f7;
+      color: #ffffff;
+      background: rgba(168, 85, 247, 0.15);
+    }
+
+    .btn-save-master {
+      background: linear-gradient(135deg, #7c3aed, #c026d3, #e11d48);
+      border: none;
+      color: #ffffff;
+      padding: 0.55rem 1.4rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(192, 38, 211, 0.5);
+      transition: all 0.25s ease;
+    }
+
+    .btn-save-master:hover {
+      box-shadow: 0 6px 25px rgba(244, 63, 94, 0.7);
+      transform: translateY(-2px);
+    }
+
+    /* MAIN ADMIN LAYOUT WITH 3 COLUMNS: SIDEBAR, CONTENT, LIVE PREVIEW DOCK */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 220px 1.25fr 390px;
+      flex: 1;
+      max-width: 1720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.8rem;
+      gap: 1.8rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* SIDEBAR NAVIGATION */
+    .admin-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: sticky;
+      top: 6rem;
+      height: fit-content;
+    }
+
+    .sidebar-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-gray);
+      padding: 0.75rem 1.1rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-btn:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+    }
+
+    .sidebar-btn.active {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.25), rgba(225, 29, 72, 0.15));
+      border-color: rgba(168, 85, 247, 0.5);
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+    }
+
+    /* CONTENT PANELS */
+    .admin-content {
+      background: rgba(14, 14, 22, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      min-height: 680px;
+    }
+
+    .panel-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: #ffffff;
+    }
+
+    .panel-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-gray);
+      margin-top: 0.2rem;
+    }
+
+    .admin-tab-pane {
+      display: none;
+    }
+
+    .admin-tab-pane.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* FORM STYLES */
+    .form-group-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group-full {
+      margin-bottom: 1.4rem;
+    }
+
+    .admin-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.45rem;
+      display: block;
+    }
+
+    .admin-input, .admin-textarea, .admin-select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: #ffffff;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
+      background: rgba(168, 85, 247, 0.04);
+    }
+
+    .admin-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* CARD LIST ITEMS (TECH STACK, PROJECTS, CAPABILITIES) */
+    .list-item-box {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 1.4rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color 0.2s ease;
+    }
+
+    .list-item-box:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+    }
+
+    .item-meta h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.25rem;
+    }
+
+    .item-meta p {
+      font-size: 0.78rem;
+      color: var(--text-gray);
+      line-height: 1.4;
+    }
+
+    .item-tag {
+      font-size: 0.68rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      font-weight: 600;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-item-action {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-item-action:hover {
+      background: rgba(168, 85, 247, 0.2);
+      border-color: #a855f7;
+      color: #ffffff;
+    }
+
+    .btn-item-del:hover {
+      background: rgba(225, 29, 72, 0.25);
+      border-color: #e11d48;
+      color: #ffffff;
+    }
+
+    /* CODE BOX FOR SQL SCHEMA */
+    .code-sql-box {
+      background: #09090e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.2rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #38bdf8;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      position: relative;
+      margin: 1rem 0;
+      user-select: all;
+    }
+
+    .btn-copy-sql {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #ffffff;
+      padding: 0.35rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    /* FLOATING TOAST */
+    .admin-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0d0d17;
+      border: 1px solid #a855f7;
+      color: #ffffff;
+      padding: 0.75rem 1.4rem;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(168, 85, 247, 0.4);
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.3s ease;
+      z-index: 999999;
+      pointer-events: none;
+    }
+
+    .admin-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 960px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-sidebar { flex-direction: row; flex-wrap: wrap; position: static; }
+      .form-group-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <!-- INTERACTIVE DEVICE IMAGE CROPPER & RESIZER MODAL -->
+  <input type="file" id="global-cropper-file" accept="image/*" style="display: none;" />
+  <div class="cropper-modal-overlay" id="cropper-modal">
+    <div class="cropper-modal-box">
+      <div class="cropper-header">
+        <div>
+          <h3>Crop &amp; Resize Device Image</h3>
+          <p style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;" id="cropper-aspect-label">Target: Square (1:1)</p>
+        </div>
+        <button type="button" class="btn-close-cropper" id="btn-close-cropper" aria-label="Close cropper">✕</button>
+      </div>
+
+      <div class="cropper-canvas-wrap" id="crop-canvas-wrap">
+        <canvas id="crop-canvas" width="400" height="300"></canvas>
+      </div>
+
+      <div class="cropper-toolbar">
+        <span style="font-size: 0.72rem; color: #94a3b8;">Zoom:</span>
+        <input type="range" id="crop-zoom" min="0.5" max="3.5" step="0.05" value="1" />
+        <button type="button" class="btn-crop-action" id="btn-crop-rotate">↻ 90°</button>
+        <button type="button" class="btn-crop-action" id="btn-crop-reset">↺ Reset</button>
+      </div>
+
+      <div class="cropper-footer">
+        <span style="font-size: 0.72rem; color: #64748b;">Drag canvas to reposition.</span>
+        <button type="button" class="btn-crop-apply" id="btn-crop-apply">Crop &amp; Apply Image ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header class="admin-header">
+    <div class="admin-brand">
+      <div class="admin-badge">YA</div>
+      <div class="admin-title-wrap">
+        <h1>PORTFOLIO CMS CONSOLE</h1>
+        <span id="sync-status-indicator">● Local Engine Active</span>
+      </div>
+    </div>
+
+    <div class="admin-top-actions">
+      <a href="index.html" target="_blank" class="btn-action-pill">👁 View Live Site</a>
+      <button class="btn-action-pill" id="btn-export-json">📥 Export JSON</button>
+      <button class="btn-action-pill" id="btn-import-json">📤 Import JSON</button>
+      <button class="btn-save-master" id="btn-save-all">Save Changes ✓</button>
+      <button class="btn-action-pill" id="btn-admin-signout" style="border-color: rgba(225, 29, 72, 0.45); color: #f43f5e;">🔒 Sign Out</button>
+    </div>
+  </header>
+
+  <!-- MAIN ADMIN WORKSPACE -->
+  <div class="admin-layout">
+    <!-- LEFT SIDEBAR TABS -->
+    <aside class="admin-sidebar">
+      <button class="sidebar-btn active" data-tab="tab-general">⚙️ General &amp; Identity</button>
+      <button class="sidebar-btn" data-tab="tab-about">👤 About Me &amp; Bio</button>
+      <button class="sidebar-btn" data-tab="tab-techstack">🛠 Tech Stack &amp; Tools</button>
+      <button class="sidebar-btn" data-tab="tab-capabilities">💡 What I Can Build</button>
+      <button class="sidebar-btn" data-tab="tab-projects">🚀 Projects Showcase</button>
+      <button class="sidebar-btn" data-tab="tab-faqs">❓ FAQs</button>
+      <button class="sidebar-btn" data-tab="tab-socials">🌐 Social Channels</button>
+      <button class="sidebar-btn" data-tab="tab-ai-studio" style="color: #c084fc;">🤖 AI Studio &amp; Agent</button>
+      <button class="sidebar-btn" data-tab="tab-supabase" style="color: #38bdf8;">⚡ Supabase Cloud Sync</button>
+    </aside>
+
+    <!-- RIGHT CONTENT PANELS -->
+    <main class="admin-content">
+
+      <!-- TAB 1: GENERAL & IDENTITY -->
+      <section class="admin-tab-pane active" id="tab-general">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">General &amp; Identity Settings</h2>
+            <p class="panel-subtitle">Configure hero greetings, location badges, and running ticker ribbons.</p>
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Site Meta Title</label>
+            <input type="text" class="admin-input" id="g-siteTitle" />
+          </div>
+          <div>
+            <label class="admin-label">Monogram Emblem / Logo</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="g-monogram" placeholder="YA" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('g-monogram', '1:1')">📁 Device</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Full Name</label>
+            <input type="text" class="admin-input" id="g-fullName" />
+          </div>
+          <div>
+            <label class="admin-label">Base Location Telemetry</label>
+            <input type="text" class="admin-input" id="g-location" placeholder="Dhaka, Bangladesh" />
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Hero Greeting Word</label>
+            <input type="text" class="admin-input" id="g-greeting" placeholder="Hi." />
+          </div>
+          <div>
+            <label class="admin-label">Typewriter Default Line</label>
+            <input type="text" class="admin-input" id="g-roleSubtitle" placeholder="I am Yafi Ahmed." />
+          </div>
+        </div>
+
+        <div class="form-group-full">
+          <label class="admin-label">Hero Sub-Manifesto Paragraph</label>
+          <textarea class="admin-textarea" id="g-manifesto"></textarea>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Homepage Displayed Projects Count</label>
+            <select class="admin-select" id="g-projectCount">
+              <option value="3">Show 3 Projects on Home</option>
+              <option value="4" selected>Show 4 Projects on Home (Recommended)</option>
+              <option value="5">Show 5 Projects on Home</option>
+              <option value="6">Show 6 Projects on Home</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: ABOUT ME & BIO -->
+      <section class="admin-tab-pane" id="tab-about">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">About Me &amp; Experience</h2>
+            <p class="panel-subtitle">Update narrative biography paragraphs and telemetry statistics.</p>
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Headline White Part</label>
+            <input type="text" class="admin-input" id="a-headlineWhite" />
+          </div>
+          <div>
+            <label class="admin-label">Headline Gradient Part</label>
+            <input type="text" class="admin-input" id="a-headlineGradient" />
+          </div>
+        </div>
+
+        <div class="form-group-full">
+          <label class="admin-label">Biography Paragraph 1</label>
+          <textarea class="admin-textarea" id="a-bioP1"></textarea>
+        </div>
+
+        <div class="form-group-full">
+          <label class="admin-label">Biography Paragraph 2</label>
+          <textarea class="admin-textarea" id="a-bioP2"></textarea>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Years of Experience Stat</label>
+            <input type="text" class="admin-input" id="a-yearsExperience" placeholder="4+" />
+          </div>
+          <div>
+            <label class="admin-label">Completed Builds Stat</label>
+            <input type="text" class="admin-input" id="a-completedBuilds" placeholder="24+" />
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Flight Hours Stat</label>
+            <input type="text" class="admin-input" id="a-flightHours" placeholder="1,200+" />
+          </div>
+          <div>
+            <label class="admin-label">Avatar Photo Path / URL</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="a-profileImg" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('a-profileImg', '1:1')">📁 Crop (1:1)</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: TECH STACK & TOOLS -->
+      <section class="admin-tab-pane" id="tab-techstack">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Tech Stack &amp; Tools Directory</h2>
+            <p class="panel-subtitle">Manage all active technologies and languages.</p>
+          </div>
+          <button class="btn-action-pill" id="btn-add-tech" style="border-color: #38bdf8; color: #38bdf8;">+ Add New Tool</button>
+        </div>
+
+        <div id="admin-tech-list">
+          <!-- Populated from PortfolioData -->
+        </div>
+      </section>
+
+      <!-- TAB 4: WHAT I CAN BUILD (CAPABILITIES) -->
+      <section class="admin-tab-pane" id="tab-capabilities">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">What I Can Build (Capabilities)</h2>
+            <p class="panel-subtitle">Edit high-level solution offerings and feature bullet points.</p>
+          </div>
+          <button class="btn-action-pill" id="btn-add-cap" style="border-color: #c084fc; color: #c084fc;">+ Add Capability</button>
+        </div>
+
+        <div id="admin-cap-list">
+          <!-- Populated from PortfolioData -->
+        </div>
+      </section>
+
+      <!-- TAB 5: PROJECTS SHOWCASE -->
+      <section class="admin-tab-pane" id="tab-projects">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Projects Showcase</h2>
+            <p class="panel-subtitle">Add, edit, or remove hardware and software builds.</p>
+          </div>
+          <button class="btn-action-pill" id="btn-add-project" style="border-color: #f43f5e; color: #f43f5e;">+ Add New Project</button>
+        </div>
+
+        <div id="admin-project-list">
+          <!-- Populated from PortfolioData -->
+        </div>
+      </section>
+
+      <!-- TAB 6: FAQS -->
+      <section class="admin-tab-pane" id="tab-faqs">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Frequently Asked Questions</h2>
+            <p class="panel-subtitle">Manage client inquiries and architecture FAQ items.</p>
+          </div>
+          <button class="btn-action-pill" id="btn-add-faq" style="border-color: #a855f7; color: #a855f7;">+ Add FAQ</button>
+        </div>
+
+        <div id="admin-faq-list">
+          <!-- Populated from PortfolioData -->
+        </div>
+      </section>
+
+      <!-- TAB 7: SOCIALS -->
+      <section class="admin-tab-pane" id="tab-socials">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Social Links &amp; Transmission Handles</h2>
+            <p class="panel-subtitle">Configure direct handles and official target URLs.</p>
+          </div>
+        </div>
+
+        <div id="admin-socials-form">
+          <!-- Populated from PortfolioData -->
+        </div>
+      </section>
+
+      <!-- TAB 8: SUPABASE CLOUD DATABASE SYNC -->
+      <section class="admin-tab-pane" id="tab-supabase">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Supabase Cloud Database Sync</h2>
+            <p class="panel-subtitle">Connect PostgreSQL cloud storage for remote editing and automated backups.</p>
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Supabase Project URL</label>
+            <input type="text" class="admin-input" id="sb-url" placeholder="https://yourproject.supabase.co" />
+          </div>
+          <div>
+            <label class="admin-label">Supabase Anon Public Key</label>
+            <input type="password" class="admin-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsIn..." />
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Table Name</label>
+            <input type="text" class="admin-input" id="sb-table" value="portfolio_content" />
+          </div>
+          <div style="display: flex; align-items: flex-end; gap: 0.8rem;">
+            <button class="btn-action-pill" id="btn-sb-push" style="background: linear-gradient(135deg, #38bdf8, #818cf8); color: #000; font-weight: 700; border: none; padding: 0.75rem 1.4rem;">Push Local to Cloud ⬆</button>
+            <button class="btn-action-pill" id="btn-sb-pull" style="border-color: #38bdf8; color: #38bdf8; padding: 0.75rem 1.4rem;">Pull Cloud to Local ⬇</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h4 style="font-size: 0.9rem; color: #ffffff; margin-bottom: 0.4rem;">Step 1: One-Click Supabase Table SQL</h4>
+          <p style="font-size: 0.78rem; color: var(--text-gray); margin-bottom: 0.8rem;">
+            Paste this SQL directly into your Supabase Dashboard &gt; SQL Editor and click "RUN". It sets up the schema with public read and insert policies in 3 seconds:
+          </p>
+          <div class="code-sql-box" id="sql-box">
+-- =========================================================
+-- YAFI AHMED ECOSYSTEM - PRODUCTION SUPABASE DATABASE SCHEMA
+-- =========================================================
+
+-- 1. PORTFOLIO CONTENT TABLE (Main CMS Store)
+create table if not exists public.portfolio_content (
+  id text primary key default 'main',
+  data jsonb not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.portfolio_content enable row level security;
+
+drop policy if exists "Public Read Content" on public.portfolio_content;
+create policy "Public Read Content" on public.portfolio_content for select using (true);
+
+drop policy if exists "Anon Full Access Content" on public.portfolio_content;
+create policy "Anon Full Access Content" on public.portfolio_content for all using (true) with check (true);
+
+-- 2. CONTACT INQUIRIES TABLE (Client & Transmission Inbox)
+create table if not exists public.contact_inquiries (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  subject text default 'General Inquiry',
+  message text not null,
+  status text default 'unread',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.contact_inquiries enable row level security;
+
+drop policy if exists "Public Can Submit Inquiries" on public.contact_inquiries;
+create policy "Public Can Submit Inquiries" on public.contact_inquiries for insert with check (true);
+
+drop policy if exists "Admin Can View Inquiries" on public.contact_inquiries;
+create policy "Admin Can View Inquiries" on public.contact_inquiries for select using (true);
+
+create index if not exists idx_inquiries_created_at on public.contact_inquiries (created_at desc);
+
+-- 3. USER PROFILES TABLE (Social OAuth & Member Database)
+create table if not exists public.user_profiles (
+  id uuid references auth.users on delete cascade primary key,
+  full_name text,
+  email text,
+  phone text,
+  avatar_url text,
+  provider text,
+  role text default 'member',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.user_profiles enable row level security;
+
+drop policy if exists "Public Read User Profiles" on public.user_profiles;
+create policy "Public Read User Profiles" on public.user_profiles for select using (true);
+
+drop policy if exists "Users Can Update Own Profile" on public.user_profiles;
+create policy "Users Can Update Own Profile" on public.user_profiles for update using (auth.uid() = id);
+
+create index if not exists idx_profiles_email on public.user_profiles (email);
+
+-- 4. AUTOMATIC PROFILE TRIGGER ON SIGNUP / SOCIAL OAUTH
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.user_profiles (id, full_name, email, phone, avatar_url, provider)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
+    new.email,
+    new.raw_user_meta_data->>'phone',
+    coalesce(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture'),
+    coalesce(new.raw_app_meta_data->>'provider', 'email')
+  )
+  on conflict (id) do update set
+    full_name = coalesce(excluded.full_name, user_profiles.full_name),
+    avatar_url = coalesce(excluded.avatar_url, user_profiles.avatar_url),
+    updated_at = now();
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- 5. GRANT PERMISSIONS
+grant usage on schema public to anon, authenticated;
+grant all on all tables in schema public to anon, authenticated;
+grant all on all sequences in schema public to anon, authenticated;
+            <button class="btn-copy-sql" id="btn-copy-sql">Copy SQL</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 9: AI STUDIO & AGENT CONFIG -->
+      <section class="admin-tab-pane" id="tab-ai-studio">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Yafi AI — Cognitive Assistant Controls</h2>
+            <p class="panel-subtitle">Configure your custom AI agent persona, image generation limits, and session quotas.</p>
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">AI Agent Name</label>
+            <input type="text" class="admin-input" id="ai-bot-name" placeholder="Yafi AI" />
+          </div>
+          <div>
+            <label class="admin-label">AI Subtitle / Persona</label>
+            <input type="text" class="admin-input" id="ai-bot-subtitle" placeholder="Autonomous Cognitive Systems Agent" />
+          </div>
+        </div>
+
+        <div class="form-group-full">
+          <label class="admin-label">Greeting / Welcome Prompt</label>
+          <textarea class="admin-textarea" id="ai-welcome-msg" rows="3" placeholder="Welcome message shown when visitors launch Yafi AI..."></textarea>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Max AI Image Generations per User</label>
+            <input type="number" class="admin-input" id="ai-max-images" min="0" max="100" placeholder="5 (Set 0 for Unlimited)" />
+            <span style="font-size: 0.72rem; color: #64748b;">Enter 5 for standard limit, or 0 for unlimited generations.</span>
+          </div>
+          <div>
+            <label class="admin-label">Session Usage Timer (Minutes)</label>
+            <input type="number" class="admin-input" id="ai-session-limit" min="0" max="300" placeholder="30 (Set 0 for Unlimited)" />
+            <span style="font-size: 0.72rem; color: #64748b;">Controls the countdown badge before session refresh.</span>
+          </div>
+        </div>
+
+        <div class="form-group-full">
+          <label class="admin-label">Output Watermark Notice</label>
+          <input type="text" class="admin-input" id="ai-watermark" placeholder="Created by Yafi AI — Engineered by Yafi Ahmed" />
+        </div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT LIVE PREVIEW DOCK -->
+    <aside class="admin-preview-dock" id="admin-preview-dock">
+      <div class="preview-dock-header">
+        <div class="dock-header-title">
+          <span class="live-pulse"></span>
+          <span>LIVE PREVIEW DOCK</span>
+        </div>
+        <span class="preview-badge" id="preview-tab-label">General &amp; Identity</span>
+      </div>
+
+      <div class="preview-card-frame" id="preview-card-frame">
+        <!-- Live Preview Content generated dynamically on input -->
+      </div>
+    </aside>
+  </div>
+
+  <!-- FLOATING FEEDBACK TOAST -->
+  <div class="admin-toast" id="admin-toast">Changes saved successfully!</div>
+
+  <script>
+    (function () {
+      // Immediate Admin Authentication Guard
+      const hasAdminAuth = sessionStorage.getItem('yafi_admin_auth') === 'true' || localStorage.getItem('yafi_admin_auth') === 'true';
+      if (!hasAdminAuth) {
+        window.location.replace('index.html#signin');
+        return;
+      }
+
+      const btnSignOut = document.getElementById('btn-admin-signout');
+      const toast = document.getElementById('admin-toast');
+
+      // Toast utility
+      function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+
+      if (btnSignOut) {
+        btnSignOut.addEventListener('click', () => {
+          sessionStorage.removeItem('yafi_admin_auth');
+          localStorage.removeItem('yafi_admin_auth');
+          window.location.replace('index.html#signin');
+        });
+      }
+
+      // =========================================
+      // INTERACTIVE DEVICE IMAGE CROPPER & RESIZER
+      // =========================================
+      let cropperTargetId = null;
+      let cropperMode = '1:1';
+      let sourceImage = null;
+      let cropState = {
+        zoom: 1,
+        rotation: 0,
+        offsetX: 0,
+        offsetY: 0,
+        isDragging: false,
+        startX: 0,
+        startY: 0
+      };
+
+      const cropperModal = document.getElementById('cropper-modal');
+      const cropCanvas = document.getElementById('crop-canvas');
+      const cropCtx = cropCanvas ? cropCanvas.getContext('2d') : null;
+      const cropZoom = document.getElementById('crop-zoom');
+      const btnCropRotate = document.getElementById('btn-crop-rotate');
+      const btnCropReset = document.getElementById('btn-crop-reset');
+      const btnCropApply = document.getElementById('btn-crop-apply');
+      const btnCloseCropper = document.getElementById('btn-close-cropper');
+      const fileInput = document.getElementById('global-cropper-file');
+      const aspectLabel = document.getElementById('cropper-aspect-label');
+
+      window.pickAndCropImage = function (targetId, mode = '1:1') {
+        cropperTargetId = targetId;
+        cropperMode = mode;
+        if (aspectLabel) {
+          aspectLabel.textContent = mode === '1:1' ? 'Target: Square (1:1 Avatar / Logo)' : 'Target: Widescreen (16:9 Banner)';
+        }
+        if (fileInput) {
+          fileInput.value = '';
+          fileInput.click();
+        }
+      };
+
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => {
+              sourceImage = img;
+              resetCropState();
+              if (cropperModal) cropperModal.classList.add('active');
+              drawCropCanvas();
+            };
+            img.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function resetCropState() {
+        cropState = {
+          zoom: 1,
+          rotation: 0,
+          offsetX: 0,
+          offsetY: 0,
+          isDragging: false,
+          startX: 0,
+          startY: 0
+        };
+        if (cropZoom) cropZoom.value = 1;
+      }
+
+      function drawCropCanvas() {
+        if (!cropCtx || !sourceImage) return;
+        const w = cropCanvas.width;
+        const h = cropCanvas.height;
+        cropCtx.clearRect(0, 0, w, h);
+
+        cropCtx.save();
+        cropCtx.translate(w / 2 + cropState.offsetX, h / 2 + cropState.offsetY);
+        cropCtx.rotate((cropState.rotation * Math.PI) / 180);
+        cropCtx.scale(cropState.zoom, cropState.zoom);
+        cropCtx.drawImage(sourceImage, -sourceImage.width / 2, -sourceImage.height / 2);
+        cropCtx.restore();
+
+        // Draw Crop Guide Overlay
+        cropCtx.save();
+        cropCtx.fillStyle = 'rgba(5, 5, 10, 0.6)';
+        const guideW = cropperMode === '1:1' ? 220 : 340;
+        const guideH = cropperMode === '1:1' ? 220 : 190;
+        const gx = (w - guideW) / 2;
+        const gy = (h - guideH) / 2;
+
+        cropCtx.beginPath();
+        cropCtx.rect(0, 0, w, h);
+        if (cropperMode === '1:1') {
+          cropCtx.arc(w / 2, h / 2, guideW / 2, 0, Math.PI * 2, true);
+        } else {
+          cropCtx.rect(gx + guideW, gy, -guideW, guideH);
+        }
+        cropCtx.fill();
+
+        cropCtx.strokeStyle = '#38bdf8';
+        cropCtx.lineWidth = 2;
+        cropCtx.setLineDash([6, 4]);
+        if (cropperMode === '1:1') {
+          cropCtx.beginPath();
+          cropCtx.arc(w / 2, h / 2, guideW / 2, 0, Math.PI * 2);
+          cropCtx.stroke();
+        } else {
+          cropCtx.strokeRect(gx, gy, guideW, guideH);
+        }
+        cropCtx.restore();
+      }
+
+      if (cropCanvas) {
+        cropCanvas.addEventListener('mousedown', (e) => {
+          cropState.isDragging = true;
+          cropState.startX = e.clientX - cropState.offsetX;
+          cropState.startY = e.clientY - cropState.offsetY;
+        });
+        window.addEventListener('mousemove', (e) => {
+          if (!cropState.isDragging) return;
+          cropState.offsetX = e.clientX - cropState.startX;
+          cropState.offsetY = e.clientY - cropState.startY;
+          drawCropCanvas();
+        });
+        window.addEventListener('mouseup', () => { cropState.isDragging = false; });
+
+        cropCanvas.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            cropState.isDragging = true;
+            cropState.startX = e.touches[0].clientX - cropState.offsetX;
+            cropState.startY = e.touches[0].clientY - cropState.offsetY;
+          }
+        });
+        cropCanvas.addEventListener('touchmove', (e) => {
+          if (cropState.isDragging && e.touches.length === 1) {
+            cropState.offsetX = e.touches[0].clientX - cropState.startX;
+            cropState.offsetY = e.touches[0].clientY - cropState.startY;
+            drawCropCanvas();
+          }
+        });
+        cropCanvas.addEventListener('touchend', () => { cropState.isDragging = false; });
+      }
+
+      if (cropZoom) {
+        cropZoom.addEventListener('input', (e) => {
+          cropState.zoom = parseFloat(e.target.value);
+          drawCropCanvas();
+        });
+      }
+
+      if (btnCropRotate) {
+        btnCropRotate.addEventListener('click', () => {
+          cropState.rotation = (cropState.rotation + 90) % 360;
+          drawCropCanvas();
+        });
+      }
+
+      if (btnCropReset) {
+        btnCropReset.addEventListener('click', () => {
+          resetCropState();
+          drawCropCanvas();
+        });
+      }
+
+      if (btnCloseCropper && cropperModal) {
+        btnCloseCropper.addEventListener('click', () => {
+          cropperModal.classList.remove('active');
+        });
+      }
+
+      if (btnCropApply && cropperModal) {
+        btnCropApply.addEventListener('click', () => {
+          if (!sourceImage) return;
+          const outW = cropperMode === '1:1' ? 400 : 800;
+          const outH = cropperMode === '1:1' ? 400 : 450;
+          const outCanvas = document.createElement('canvas');
+          outCanvas.width = outW;
+          outCanvas.height = outH;
+          const outCtx = outCanvas.getContext('2d');
+
+          const guideW = cropperMode === '1:1' ? 220 : 340;
+          const guideH = cropperMode === '1:1' ? 220 : 190;
+          const scale = outW / guideW;
+
+          outCtx.translate(outW / 2 + cropState.offsetX * scale, outH / 2 + cropState.offsetY * scale);
+          outCtx.rotate((cropState.rotation * Math.PI) / 180);
+          outCtx.scale(cropState.zoom * scale, cropState.zoom * scale);
+          outCtx.drawImage(sourceImage, -sourceImage.width / 2, -sourceImage.height / 2);
+
+          const base64Data = outCanvas.toDataURL('image/jpeg', 0.88);
+          if (cropperTargetId) {
+            if (typeof cropperTargetId === 'function') {
+              cropperTargetId(base64Data);
+            } else {
+              const target = document.getElementById(cropperTargetId);
+              if (target) {
+                target.value = base64Data;
+                target.dispatchEvent(new Event('input', { bubbles: true }));
+              }
+            }
+          }
+          cropperModal.classList.remove('active');
+          showToast('Image cropped & applied successfully!');
+          updateLivePreview();
+        });
+      }
+
+      // =========================================
+      // DYNAMIC REAL-TIME LIVE PREVIEW RENDERER
+      // =========================================
+      let activeTabKey = 'tab-general';
+
+      function updateLivePreview() {
+        const frame = document.getElementById('preview-card-frame');
+        const badge = document.getElementById('preview-tab-label');
+        if (!frame) return;
+
+        const d = window.PortfolioData ? window.PortfolioData.data : null;
+        if (!d) return;
+
+        if (activeTabKey === 'tab-general') {
+          if (badge) badge.textContent = 'Hero / General';
+          const greeting = (document.getElementById('g-greeting') ? document.getElementById('g-greeting').value : '') || d.general.greeting || 'Hi.';
+          const role = (document.getElementById('g-roleSubtitle') ? document.getElementById('g-roleSubtitle').value : '') || d.general.roleSubtitle || 'I am Yafi Ahmed.';
+          const name = (document.getElementById('g-fullName') ? document.getElementById('g-fullName').value : '') || d.general.fullName || 'Yafi Ahmed';
+          const loc = (document.getElementById('g-location') ? document.getElementById('g-location').value : '') || d.general.location || 'Dhaka, Bangladesh';
+          const manifesto = (document.getElementById('g-manifesto') ? document.getElementById('g-manifesto').value : '') || d.general.manifesto || '';
+
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #38bdf8;">
+              <div class="prev-tag">// LIVE HERO PREVIEW //</div>
+              <div style="font-size: 0.82rem; color: #a855f7; font-weight: 700; margin-bottom: 0.2rem;">${loc}</div>
+              <div class="prev-title" style="font-size: 1.35rem;">${greeting} <span style="background: linear-gradient(135deg, #38bdf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${name}</span></div>
+              <div style="color: #cbd5e1; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.6rem;">&gt; ${role}</div>
+              <p class="prev-desc">${manifesto}</p>
+            </div>
+            <div class="prev-card">
+              <div class="prev-tag">// RUNNING TICKER BADGES //</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem;">
+                <span class="preview-badge" style="color: #38bdf8;">AUTONOMOUS DRONES</span>
+                <span class="preview-badge" style="color: #c084fc;">AGENTIC AI SWARMS</span>
+                <span class="preview-badge" style="color: #f43f5e;">NEXT-GEN SPACECRAFT</span>
+                <span class="preview-badge" style="color: #4ade80;">EDGE TENSOR INFERENCE</span>
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-about') {
+          if (badge) badge.textContent = 'About & Biography';
+          const hw = (document.getElementById('a-headlineWhite') ? document.getElementById('a-headlineWhite').value : '') || d.about.headlineWhite || '';
+          const hg = (document.getElementById('a-headlineGradient') ? document.getElementById('a-headlineGradient').value : '') || d.about.headlineGradient || '';
+          const p1 = (document.getElementById('a-bioP1') ? document.getElementById('a-bioP1').value : '') || d.about.bioP1 || '';
+          const yExp = (document.getElementById('a-yearsExperience') ? document.getElementById('a-yearsExperience').value : '') || d.about.yearsExperience || '4+';
+          const bld = (document.getElementById('a-completedBuilds') ? document.getElementById('a-completedBuilds').value : '') || d.about.completedBuilds || '24+';
+          const hrs = (document.getElementById('a-flightHours') ? document.getElementById('a-flightHours').value : '') || d.about.flightHours || '1,200+';
+          const imgUrl = (document.getElementById('a-profileImg') ? document.getElementById('a-profileImg').value : '') || d.about.profileImg || '';
+
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #a855f7;">
+              <div class="prev-tag">// BIOGRAPHY PREVIEW //</div>
+              ${imgUrl ? `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid #a855f7; margin-bottom: 0.8rem;"><img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'"></div>` : ''}
+              <div class="prev-title">${hw} <span style="background: linear-gradient(135deg, #c084fc, #f43f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${hg}</span></div>
+              <p class="prev-desc" style="max-height: 120px; overflow-y: auto;">${p1}</p>
+              <div class="prev-stat-grid">
+                <div class="prev-stat-box"><div class="prev-stat-num">${yExp}</div><div class="prev-stat-lbl">Experience</div></div>
+                <div class="prev-stat-box"><div class="prev-stat-num">${bld}</div><div class="prev-stat-lbl">Builds</div></div>
+                <div class="prev-stat-box"><div class="prev-stat-num">${hrs}</div><div class="prev-stat-lbl">Flight Hrs</div></div>
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-techstack') {
+          if (badge) badge.textContent = 'Tech Stack Directory';
+          const tools = d.techStack || [];
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #22c55e;">
+              <div class="prev-tag">// LIVE AI &amp; ROBOTICS TOOLS (${tools.length}) //</div>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto;">
+                ${tools.slice(0, 7).map(t => `
+                  <div style="background: rgba(255,255,255,0.03); padding: 0.55rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff;">${t.name} <span class="preview-badge" style="font-size: 0.6rem; padding: 1px 6px;">${t.category}</span></div>
+                    <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 2px;">${t.desc}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-capabilities') {
+          if (badge) badge.textContent = 'Capabilities (What I Build)';
+          const caps = d.capabilities || [];
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #f59e0b;">
+              <div class="prev-tag">// ACTIVE CAPABILITIES (${caps.length}) //</div>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem; max-height: 380px; overflow-y: auto;">
+                ${caps.map(c => `
+                  <div style="background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <div style="font-size: 0.84rem; font-weight: 700; color: #ffffff;">${c.title}</div>
+                    <div style="font-size: 0.72rem; color: #94a3b8; margin: 3px 0;">${c.desc}</div>
+                    <div style="font-size: 0.68rem; color: #38bdf8;">${(c.features || []).join(' • ')}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-projects') {
+          if (badge) badge.textContent = 'Projects Showcase';
+          const projs = d.projects || [];
+          const p = projs[0] || {};
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #ec4899;">
+              <div class="prev-tag">// FEATURED PROJECT PREVIEW //</div>
+              ${p.images && p.images[0] ? `<div style="width: 100%; height: 110px; border-radius: 8px; overflow: hidden; margin-bottom: 0.6rem;"><img src="${p.images[0]}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'"></div>` : ''}
+              <div class="prev-title" style="font-size: 1.05rem;">${p.title || 'Untitled Build'}</div>
+              <div style="font-size: 0.7rem; color: #c084fc; font-weight: 600; margin-bottom: 0.3rem;">${p.category || 'Engineering'}</div>
+              <p class="prev-desc">${p.summary || ''}</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem;">
+                ${(p.specs || []).map(s => `<span class="preview-badge" style="font-size: 0.62rem;">${s}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-ai-studio') {
+          if (badge) badge.textContent = 'Yafi AI Live Widget';
+          const botName = (document.getElementById('ai-bot-name') ? document.getElementById('ai-bot-name').value : '') || (d.aiSettings && d.aiSettings.botName) || 'Yafi AI';
+          const botSub = (document.getElementById('ai-bot-subtitle') ? document.getElementById('ai-bot-subtitle').value : '') || (d.aiSettings && d.aiSettings.botTitle) || 'Autonomous Cognitive Systems Agent';
+          const msg = (document.getElementById('ai-welcome-msg') ? document.getElementById('ai-welcome-msg').value : '') || (d.aiSettings && d.aiSettings.welcomeMessage) || '';
+          const maxImg = (document.getElementById('ai-max-images') ? document.getElementById('ai-max-images').value : '') || (d.aiSettings && d.aiSettings.maxImagesPerUser) || '5';
+          const limit = (document.getElementById('ai-session-limit') ? document.getElementById('ai-session-limit').value : '') || (d.aiSettings && d.aiSettings.sessionTimeLimitMinutes) || '30';
+
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #c084fc;">
+              <div class="prev-tag">// YAFI AI WIDGET PREVIEW //</div>
+              <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #e11d48); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.5);">YA</div>
+                <div>
+                  <div style="font-size: 0.92rem; font-weight: 700; color: #ffffff;">${botName}</div>
+                  <div style="font-size: 0.68rem; color: #38bdf8;">${botSub}</div>
+                </div>
+              </div>
+              <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.8rem; font-size: 0.76rem; color: #e2e8f0; line-height: 1.45; border: 1px solid rgba(255,255,255,0.08);">
+                ${msg}
+              </div>
+              <div class="prev-stat-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0.8rem;">
+                <div class="prev-stat-box"><div class="prev-stat-num">${maxImg === '0' ? '∞' : maxImg}</div><div class="prev-stat-lbl">Image Quota</div></div>
+                <div class="prev-stat-box"><div class="prev-stat-num">${limit === '0' ? '∞' : limit + 'm'}</div><div class="prev-stat-lbl">Session Time</div></div>
+              </div>
+            </div>
+          `;
+        } else {
+          if (badge) badge.textContent = 'Settings & Sync';
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #38bdf8;">
+              <div class="prev-tag">// CLOUD &amp; DATA TELEMETRY //</div>
+              <div class="prev-title" style="font-size: 1rem;">PostgreSQL Live Sync Active</div>
+              <p class="prev-desc">Your modifications automatically serialize to local cache and synchronize with Supabase Cloud.</p>
+              <div style="margin-top: 0.8rem; font-size: 0.72rem; color: #22c55e;">● All systems operational</div>
+            </div>
+          `;
+        }
+      }
+
+      // Attach real-time input event listener to main content
+      const adminMain = document.querySelector('.admin-content');
+      if (adminMain) adminMain.addEventListener('input', updateLivePreview);
+
+      // Sidebar Tab Switching
+      document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.admin-tab-pane').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          activeTabKey = btn.getAttribute('data-tab') || 'tab-general';
+          const target = document.getElementById(activeTabKey);
+          if (target) target.classList.add('active');
+          updateLivePreview();
+        });
+      });
+
+      // Populate Data into Forms
+      function populateForms() {
+        if (!window.PortfolioData || !window.PortfolioData.data) return;
+        const d = window.PortfolioData.data;
+
+        // General
+        const g = d.general || {};
+        document.getElementById('g-siteTitle').value = g.siteTitle || '';
+        document.getElementById('g-monogram').value = g.monogram || '';
+        document.getElementById('g-fullName').value = g.fullName || '';
+        document.getElementById('g-location').value = g.location || '';
+        document.getElementById('g-greeting').value = g.greeting || '';
+        document.getElementById('g-roleSubtitle').value = g.roleSubtitle || '';
+        document.getElementById('g-manifesto').value = g.manifesto || '';
+        document.getElementById('g-projectCount').value = g.homepageProjectCount || 4;
+
+        // About
+        const a = d.about || {};
+        document.getElementById('a-headlineWhite').value = a.headlineWhite || '';
+        document.getElementById('a-headlineGradient').value = a.headlineGradient || '';
+        document.getElementById('a-bioP1').value = a.bioP1 || '';
+        document.getElementById('a-bioP2').value = a.bioP2 || '';
+        document.getElementById('a-yearsExperience').value = a.yearsExperience || '';
+        document.getElementById('a-completedBuilds').value = a.completedBuilds || '';
+        document.getElementById('a-flightHours').value = a.flightHours || '';
+        document.getElementById('a-profileImg').value = a.profileImg || '';
+
+        // AI Studio
+        const ai = d.aiSettings || {};
+        const botNameEl = document.getElementById('ai-bot-name');
+        if (botNameEl) botNameEl.value = ai.botName || 'Yafi AI';
+        const botSubEl = document.getElementById('ai-bot-subtitle');
+        if (botSubEl) botSubEl.value = ai.botTitle || 'Autonomous Cognitive Systems Agent';
+        const botWelEl = document.getElementById('ai-welcome-msg');
+        if (botWelEl) botWelEl.value = ai.welcomeMessage || '';
+        const botMaxImgEl = document.getElementById('ai-max-images');
+        if (botMaxImgEl) botMaxImgEl.value = ai.maxImagesPerUser !== undefined ? ai.maxImagesPerUser : 5;
+        const botLimitEl = document.getElementById('ai-session-limit');
+        if (botLimitEl) botLimitEl.value = ai.sessionTimeLimitMinutes !== undefined ? ai.sessionTimeLimitMinutes : 30;
+        const botWatermarkEl = document.getElementById('ai-watermark');
+        if (botWatermarkEl) botWatermarkEl.value = ai.watermarkText || 'Created by Yafi AI — Engineered by Yafi Ahmed';
+
+        // Tech Stack
+        renderTechList();
+
+        // Capabilities
+        renderCapList();
+
+        // Projects
+        renderProjectList();
+
+        // FAQs
+        renderFaqList();
+
+        // Socials
+        renderSocialsForm();
+
+        // Supabase Config
+        const sb = window.PortfolioData.supabaseConfig || {};
+        document.getElementById('sb-url').value = sb.url || '';
+        document.getElementById('sb-key').value = sb.anonKey || '';
+        document.getElementById('sb-table').value = sb.tableName || 'portfolio_content';
+
+        updateLivePreview();
+      }
+
+      function renderTechList() {
+        const list = document.getElementById('admin-tech-list');
+        const tools = window.PortfolioData.data.techStack || [];
+        list.innerHTML = tools.map((t, idx) => `
+          <div class="list-item-box">
+            <div class="item-meta">
+              <h4>${t.name}</h4>
+              <p><span class="item-tag">${t.category}</span> ${t.desc}</p>
+              <a href="${t.url}" target="_blank" style="font-size: 0.72rem; color: #38bdf8;">${t.url}</a>
+            </div>
+            <div class="item-actions">
+              <button class="btn-item-action btn-item-del" onclick="deleteTech(${idx})">Delete ✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderCapList() {
+        const list = document.getElementById('admin-cap-list');
+        const caps = window.PortfolioData.data.capabilities || [];
+        list.innerHTML = caps.map((c, idx) => `
+          <div class="list-item-box">
+            <div class="item-meta">
+              <h4>${c.title}</h4>
+              <p><span class="item-tag">${c.category}</span> ${c.desc}</p>
+              <div style="font-size: 0.74rem; color: #cbd5e1; margin-top: 0.3rem;">Features: ${c.features.join(' • ')}</div>
+            </div>
+            <div class="item-actions">
+              <button class="btn-item-action btn-item-del" onclick="deleteCap(${idx})">Delete ✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderProjectList() {
+        const list = document.getElementById('admin-project-list');
+        const projs = window.PortfolioData.data.projects || [];
+        list.innerHTML = projs.map((p, idx) => `
+          <div class="list-item-box" style="align-items: center; gap: 1rem;">
+            ${p.images && p.images[0] ? `<div style="width: 74px; height: 50px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0;"><img src="${p.images[0]}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'"></div>` : ''}
+            <div class="item-meta" style="flex: 1;">
+              <h4>${p.title}</h4>
+              <p><span class="item-tag">${p.category}</span> ${p.summary}</p>
+              <div style="font-size: 0.74rem; color: #a855f7; margin-top: 0.3rem;">Specs: ${(p.specs || []).join(' | ')}</div>
+            </div>
+            <div class="item-actions">
+              <button class="btn-item-action" onclick="cropProjectImage(${idx})">📷 Crop Cover</button>
+              <button class="btn-item-action btn-item-del" onclick="deleteProject(${idx})">Delete ✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderFaqList() {
+        const list = document.getElementById('admin-faq-list');
+        const faqs = window.PortfolioData.data.faqs || [];
+        list.innerHTML = faqs.map((f, idx) => `
+          <div class="list-item-box">
+            <div class="item-meta">
+              <h4>${f.q}</h4>
+              <p>${f.a}</p>
+            </div>
+            <div class="item-actions">
+              <button class="btn-item-action btn-item-del" onclick="deleteFaq(${idx})">Delete ✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function renderSocialsForm() {
+        const wrap = document.getElementById('admin-socials-form');
+        const s = window.PortfolioData.data.socials || {};
+        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr'];
+        wrap.innerHTML = keys.map(k => {
+          const item = s[k] || { handle: '', url: '' };
+          return `
+            <div class="form-group-grid">
+              <div>
+                <label class="admin-label" style="text-transform: capitalize;">${k} Handle</label>
+                <input type="text" class="admin-input" id="soc-${k}-handle" value="${item.handle || ''}" />
+              </div>
+              <div>
+                <label class="admin-label" style="text-transform: capitalize;">${k} URL</label>
+                <input type="text" class="admin-input" id="soc-${k}-url" value="${item.url || ''}" />
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Deletion helpers
+      window.deleteTech = function (idx) {
+        window.PortfolioData.data.techStack.splice(idx, 1);
+        renderTechList();
+      };
+      window.deleteCap = function (idx) {
+        window.PortfolioData.data.capabilities.splice(idx, 1);
+        renderCapList();
+      };
+      window.deleteProject = function (idx) {
+        window.PortfolioData.data.projects.splice(idx, 1);
+        renderProjectList();
+      };
+      window.cropProjectImage = function (idx) {
+        pickAndCropImage((base64Data) => {
+          if (!window.PortfolioData.data.projects[idx].images) {
+            window.PortfolioData.data.projects[idx].images = [];
+          }
+          window.PortfolioData.data.projects[idx].images[0] = base64Data;
+          renderProjectList();
+          updateLivePreview();
+        }, '16:9');
+      };
+      window.deleteFaq = function (idx) {
+        window.PortfolioData.data.faqs.splice(idx, 1);
+        renderFaqList();
+      };
+
+      // Add New Tool prompt
+      document.getElementById('btn-add-tech').addEventListener('click', () => {
+        const name = prompt('Technology / Tool Name:');
+        if (!name) return;
+        const category = prompt('Category (e.g. AI & ML, Robotics, Web, Cloud):', 'AI & ML');
+        const desc = prompt('Short description:');
+        const url = prompt('Official website URL:', 'https://');
+        window.PortfolioData.data.techStack.push({ id: Date.now().toString(), name, category, desc, url });
+        renderTechList();
+      });
+
+      // Add New Project prompt
+      document.getElementById('btn-add-project').addEventListener('click', () => {
+        const title = prompt('Project Title:');
+        if (!title) return;
+        const category = prompt('Category (e.g. Aerospace Robotics, Agentic AI, SaaS):', 'Aerospace Robotics');
+        const summary = prompt('Short summary sentence:');
+        const specs = prompt('Specs (comma separated, e.g. "Flight Time: 30 Mins, ROS2, Jetson"):', 'Custom Hardware, RTOS');
+        window.PortfolioData.data.projects.push({
+          id: 'proj-' + Date.now(),
+          title,
+          category,
+          year: '2026',
+          summary,
+          specs: specs.split(',').map(s => s.trim()),
+          images: ['project_drone.jpg'],
+          liveUrl: '#',
+          githubUrl: '#',
+          details: summary
+        });
+        renderProjectList();
+      });
+
+      // Add New Capability
+      document.getElementById('btn-add-cap').addEventListener('click', () => {
+        const title = prompt('Capability Title:');
+        if (!title) return;
+        const category = prompt('Category:', 'Specialized Architecture');
+        const desc = prompt('Description:');
+        const feats = prompt('Features (comma separated):', 'Feature 1, Feature 2, Feature 3');
+        window.PortfolioData.data.capabilities.push({
+          id: 'cap-' + Date.now(),
+          title,
+          category,
+          desc,
+          features: feats.split(',').map(f => f.trim())
+        });
+        renderCapList();
+      });
+
+      // Add FAQ
+      document.getElementById('btn-add-faq').addEventListener('click', () => {
+        const q = prompt('Question:');
+        if (!q) return;
+        const a = prompt('Answer:');
+        window.PortfolioData.data.faqs.push({ q, a });
+        renderFaqList();
+      });
+
+      // MASTER SAVE
+      document.getElementById('btn-save-all').addEventListener('click', () => {
+        const d = window.PortfolioData.data;
+
+        // Collect General
+        d.general.siteTitle = document.getElementById('g-siteTitle').value;
+        d.general.monogram = document.getElementById('g-monogram').value;
+        d.general.fullName = document.getElementById('g-fullName').value;
+        d.general.location = document.getElementById('g-location').value;
+        d.general.greeting = document.getElementById('g-greeting').value;
+        d.general.roleSubtitle = document.getElementById('g-roleSubtitle').value;
+        d.general.manifesto = document.getElementById('g-manifesto').value;
+        d.general.homepageProjectCount = parseInt(document.getElementById('g-projectCount').value, 10) || 4;
+
+        // Collect About
+        d.about.headlineWhite = document.getElementById('a-headlineWhite').value;
+        d.about.headlineGradient = document.getElementById('a-headlineGradient').value;
+        d.about.bioP1 = document.getElementById('a-bioP1').value;
+        d.about.bioP2 = document.getElementById('a-bioP2').value;
+        d.about.yearsExperience = document.getElementById('a-yearsExperience').value;
+        d.about.completedBuilds = document.getElementById('a-completedBuilds').value;
+        d.about.flightHours = document.getElementById('a-flightHours').value;
+        d.about.profileImg = document.getElementById('a-profileImg').value;
+
+        // Collect Socials
+        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr'];
+        keys.forEach(k => {
+          const hEl = document.getElementById(`soc-${k}-handle`);
+          const uEl = document.getElementById(`soc-${k}-url`);
+          if (hEl && uEl) {
+            d.socials[k] = { handle: hEl.value, url: uEl.value, active: true };
+          }
+        });
+
+        // Collect AI Studio Settings
+        d.aiSettings = d.aiSettings || {};
+        const aiName = document.getElementById('ai-bot-name');
+        if (aiName) d.aiSettings.botName = aiName.value.trim() || 'Yafi AI';
+        const aiSub = document.getElementById('ai-bot-subtitle');
+        if (aiSub) d.aiSettings.botTitle = aiSub.value.trim() || 'Autonomous Cognitive Systems Agent';
+        const aiWel = document.getElementById('ai-welcome-msg');
+        if (aiWel) d.aiSettings.welcomeMessage = aiWel.value;
+        const aiMax = document.getElementById('ai-max-images');
+        if (aiMax) d.aiSettings.maxImagesPerUser = parseInt(aiMax.value, 10);
+        const aiLimit = document.getElementById('ai-session-limit');
+        if (aiLimit) d.aiSettings.sessionTimeLimitMinutes = parseInt(aiLimit.value, 10);
+        const aiWater = document.getElementById('ai-watermark');
+        if (aiWater) d.aiSettings.watermarkText = aiWater.value;
+
+        // Collect Supabase Config
+        const sbConfig = {
+          url: document.getElementById('sb-url').value.trim(),
+          anonKey: document.getElementById('sb-key').value.trim(),
+          tableName: document.getElementById('sb-table').value.trim() || 'portfolio_content'
+        };
+        window.PortfolioData.saveSupabaseConfig(sbConfig);
+
+        // Save LocalStorage
+        window.PortfolioData.saveData(d);
+        showToast('All changes saved! Live portfolio updated.');
+      });
+
+      // Export JSON
+      document.getElementById('btn-export-json').addEventListener('click', () => {
+        const json = window.PortfolioData.exportJSON();
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `yafi_portfolio_backup_${Date.now()}.json`;
+        a.click();
+        showToast('JSON Backup downloaded.');
+      });
+
+      // Import JSON
+      document.getElementById('btn-import-json').addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const res = window.PortfolioData.importJSON(evt.target.result);
+            if (res.success) {
+              populateForms();
+              showToast('Backup JSON imported successfully!');
+            } else {
+              alert('Error importing JSON: ' + res.error);
+            }
+          };
+          reader.readAsText(file);
+        };
+        input.click();
+      });
+
+      // Copy SQL
+      document.getElementById('btn-copy-sql').addEventListener('click', () => {
+        const sql = document.getElementById('sql-box').innerText.replace('Copy SQL', '').trim();
+        navigator.clipboard.writeText(sql).then(() => {
+          showToast('SQL copied to clipboard!');
+        });
+      });
+
+      // Supabase Push
+      document.getElementById('btn-sb-push').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-sb-push');
+        btn.textContent = 'Pushing to Cloud...';
+        try {
+          // Save current inputs first
+          const sbConfig = {
+            url: document.getElementById('sb-url').value.trim(),
+            anonKey: document.getElementById('sb-key').value.trim(),
+            tableName: document.getElementById('sb-table').value.trim() || 'portfolio_content'
+          };
+          window.PortfolioData.saveSupabaseConfig(sbConfig);
+          await window.PortfolioData.pushToSupabase();
+          showToast('Successfully synced to Supabase Cloud Database! ☁️');
+          document.getElementById('sync-status-indicator').textContent = '● Supabase Cloud Synced';
+          document.getElementById('sync-status-indicator').style.color = '#4ade80';
+        } catch (err) {
+          alert('Supabase Push Error:\n' + err.message);
+        } finally {
+          btn.textContent = 'Push Local to Cloud ⬆';
+        }
+      });
+
+      // Supabase Pull
+      document.getElementById('btn-sb-pull').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-sb-pull');
+        btn.textContent = 'Pulling from Cloud...';
+        try {
+          const sbConfig = {
+            url: document.getElementById('sb-url').value.trim(),
+            anonKey: document.getElementById('sb-key').value.trim(),
+            tableName: document.getElementById('sb-table').value.trim() || 'portfolio_content'
+          };
+          window.PortfolioData.saveSupabaseConfig(sbConfig);
+          await window.PortfolioData.pullFromSupabase();
+          populateForms();
+          showToast('Fresh data pulled from Supabase Cloud! ☁️');
+          document.getElementById('sync-status-indicator').textContent = '● Supabase Cloud Synced';
+          document.getElementById('sync-status-indicator').style.color = '#4ade80';
+        } catch (err) {
+          alert('Supabase Pull Error:\n' + err.message);
+        } finally {
+          btn.textContent = 'Pull Cloud to Local ⬇';
+        }
+      });
+
+      populateForms();
+    })();
+  </script>
+</body>
+</html>

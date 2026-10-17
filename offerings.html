@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Offerings & Services — Yafi Ahmed</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Bebas+Neue&family=Cinzel:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Data Engine -->
+  <script src="portfolio-data.js"></script>
+  <!-- Natural Momentum Scroll Engine (Lenis) -->
+  <script src="lenis.min.js"></script>
+
+  <style>
+    :root {
+      --bg-black: #060609;
+      --text-white: #ffffff;
+      --text-gray: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-purple: #9333ea;
+      --accent-crimson: #e11d48;
+      --cyan-glow: #38bdf8;
+      --font-hero: 'Bebas Neue', 'Barlow Condensed', sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: auto !important;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: var(--font-body);
+      scrollbar-width: thin;
+      scrollbar-color: #c026d3 #060609;
+    }
+
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+    .lenis.lenis-stopped { overflow: hidden; }
+
+    /* CYBER NEON GLOWING CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: #060609; border-left: 1px solid rgba(255, 255, 255, 0.05); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #9333ea 0%, #c026d3 50%, #e11d48 100%);
+      border-radius: 9999px;
+      border: 2px solid #060609;
+      box-shadow: 0 0 14px rgba(192, 38, 211, 0.65);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #a855f7 0%, #e879f9 50%, #fb7185 100%);
+      box-shadow: 0 0 22px rgba(244, 63, 94, 0.95);
+    }
+
+    body {
+      background-color: var(--bg-black);
+      overflow-x: hidden;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ambient-glow-left {
+      position: fixed;
+      top: 15vh;
+      left: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(147, 51, 234, 0.25) 0%, rgba(88, 28, 135, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-right {
+      position: fixed;
+      top: 20vh;
+      right: -10vw;
+      width: 48vw;
+      height: 65vh;
+      background: radial-gradient(ellipse at center, rgba(225, 29, 72, 0.26) 0%, rgba(159, 18, 57, 0.12) 45%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAVBAR */
+    .navbar-pill-wrapper {
+      position: fixed;
+      top: 1.1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 4.5rem);
+      max-width: 1300px;
+      z-index: 1000;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+    }
+
+    .navbar-pill-wrapper.nav-hidden {
+      transform: translateX(-50%) translateY(-145%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .navbar-pill {
+      height: 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14, 14, 20, 0.72);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 9999px;
+      padding: 0 0.8rem 0 1rem;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+    }
+
+    .nav-logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(168, 85, 247, 0.8);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 15, 0.6);
+      text-decoration: none;
+    }
+
+    .nav-monogram {
+      font-family: var(--font-hero);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+    }
+
+    .nav-tabs-center {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-tabs-center a {
+      color: var(--text-gray);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.25s ease;
+      position: relative;
+      padding: 0.35rem 0;
+    }
+
+    .nav-tabs-center a:hover,
+    .nav-tabs-center a.active {
+      color: #ffffff;
+    }
+
+    .nav-tabs-center a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 2.5px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      box-shadow: 0 0 10px #38bdf8, 0 0 18px rgba(56, 189, 248, 0.8);
+    }
+
+    .nav-auth-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-btn-signin {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #d1d5db;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.42rem 1.15rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn-signup {
+      background: linear-gradient(90deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.48rem 1.35rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(192, 38, 211, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    /* MAIN PAGE CONTENT */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 7.5rem 2rem 5rem 2rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .page-header {
+      margin-bottom: 3.5rem;
+      text-align: left;
+    }
+
+    .page-tag {
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #c026d3;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .page-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #c026d3;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #c026d3;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      margin-bottom: 0.8rem;
+    }
+
+    .page-subtitle {
+      font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+      color: #94a3b8;
+      max-width: 780px;
+      line-height: 1.6;
+    }
+
+    /* OFFERINGS GRID */
+    .offerings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .offering-card {
+      background: rgba(14, 14, 22, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 20px;
+      padding: 2.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .offering-card:hover {
+      border-color: rgba(168, 85, 247, 0.45);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(168, 85, 247, 0.2);
+    }
+
+    .card-tier-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-service-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.8rem;
+    }
+
+    .card-service-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.65;
+      margin-bottom: 1.6rem;
+    }
+
+    .deliverables-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .deliverables-list li {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .deliverables-list li span.bullet {
+      color: #c026d3;
+      font-weight: bold;
+    }
+
+    .card-footer-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-engage {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(225, 29, 72, 0.4));
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      color: #ffffff;
+      padding: 0.6rem 1.3rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+
+    .btn-engage:hover {
+      background: linear-gradient(135deg, #7c3aed, #e11d48);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.5);
+    }
+
+    /* PROCESS TIMELINE */
+    .process-section {
+      background: rgba(14, 14, 22, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 4rem;
+    }
+
+    .process-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .step-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+    }
+
+    .step-num {
+      font-family: var(--font-hero);
+      font-size: 2.2rem;
+      color: #38bdf8;
+      line-height: 1;
+    }
+
+    .step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .step-desc {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      line-height: 1.55;
+    }
+
+    /* FOOTER */
+    .footer-ecosystem {
+      width: 100%;
+      padding: 3.5rem 4vw 2.8rem 4vw;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 8, 12, 0.95);
+      position: relative;
+      z-index: 15;
+    }
+
+    .footer-content {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1.1fr;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
+    .footer-col-brand { display: flex; flex-direction: column; gap: 0.85rem; }
+    .footer-brand-header { display: flex; align-items: center; gap: 0.75rem; }
+    .footer-title { font-size: 1rem; font-weight: 800; color: #ffffff; letter-spacing: 0.05em; }
+    .footer-motto { font-size: 0.78rem; color: #94a3b8; line-height: 1.5; }
+    .footer-location-telemetry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      width: fit-content;
+    }
+
+    .footer-col-nav { display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-heading { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #c084fc; margin-bottom: 0.3rem; }
+    .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links-list a { color: #94a3b8; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease; }
+    .footer-links-list a:hover { color: #ffffff; transform: translateX(3px); }
+
+    .footer-col-legal { display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-end; text-align: right; }
+    .footer-legal-links { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: flex-end; }
+    .footer-legal-btn { background: transparent; border: none; color: #94a3b8; font-size: 0.76rem; cursor: pointer; text-decoration: underline; }
+    .footer-copy { font-size: 0.74rem; color: #64748b; }
+    .btn-back-top {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #cbd5e1;
+      border-radius: 9999px;
+      padding: 7px 16px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s ease;
+    }
+    .btn-back-top:hover { border-color: #a855f7; color: #ffffff; background: rgba(168, 85, 247, 0.2); }
+
+    /* Button ripple */
+    button, a.btn-engage, .nav-btn-signin, .nav-btn-signup, .btn-back-top {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    button:active, a.btn-engage:active, .nav-btn-signin:active, .nav-btn-signup:active {
+      transform: scale(0.94) !important;
+    }
+    .btn-ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: btnRippleAnim 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(192, 38, 211, 0.35) 50%, transparent 75%);
+      pointer-events: none;
+    }
+    @keyframes btnRippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    @media (max-width: 900px) {
+      .offerings-grid { grid-template-columns: 1fr; }
+      .process-steps-grid { grid-template-columns: 1fr; }
+      .footer-content { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-col-legal { align-items: flex-start; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow-left"></div>
+  <div class="ambient-glow-right"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar-pill-wrapper">
+    <nav class="navbar-pill">
+      <a href="index.html" class="nav-logo-badge">
+        <span class="nav-monogram">YA</span>
+      </a>
+
+      <ul class="nav-tabs-center">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="ai-assistant.html">AI Studio</a></li>
+        <li><a href="techstack.html">Tech Stack</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="offerings.html" class="active">Offerings</a></li>
+        <li><a href="connect.html">Connect</a></li>
+      </ul>
+
+      <div class="nav-auth-group">
+        <a href="connect.html" class="nav-btn-signin">Book Consultation</a>
+        <a href="projects.html" class="nav-btn-signup">Projects &rarr;</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-wrapper">
+    <div class="page-header">
+      <div class="page-tag">Commercial &amp; Contract Engagements</div>
+      <h1 class="page-title">Engineering Offerings &amp; Services</h1>
+      <p class="page-subtitle">
+        Bespoke development for forward-thinking aerospace teams, AI research labs, and deep-tech founders requiring physical prototypes and rock-solid software.
+      </p>
+    </div>
+
+    <!-- OFFERINGS GRID -->
+    <div class="offerings-grid">
+      <!-- 1. Drones -->
+      <div class="offering-card">
+        <div>
+          <div class="card-tier-label">AEROSPACE &amp; ROBOTICS</div>
+          <h3 class="card-service-title">Autonomous Drone Navigation &amp; SLAM</h3>
+          <p class="card-service-desc">
+            End-to-end custom autonomous aerial platforms. We design carbon-fiber frames, configure PX4/ArduPilot real-time firmware, and integrate edge vision models (YOLOv8 + Coral/Jetson) for GPS-denied obstacle clearance.
+          </p>
+          <ul class="deliverables-list">
+            <li><span class="bullet">✦</span> Custom Flight Controller RTOS Firmware</li>
+            <li><span class="bullet">✦</span> GPS-Denied Visual SLAM &amp; Stereo Camera Obstacle Avoidance</li>
+            <li><span class="bullet">✦</span> 900MHz Long-Range Encrypted Ground-Station Telemetry</li>
+            <li><span class="bullet">✦</span> Complete CAD Blueprints, Wiring Schematics &amp; Flight Logs</li>
+          </ul>
+        </div>
+        <div class="card-footer-cta">
+          <span style="font-size: 0.74rem; color: #38bdf8;">Production Grade</span>
+          <a href="connect.html?service=drone" class="btn-engage">
+            <span>Inquire About Drones</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. Agentic AI -->
+      <div class="offering-card">
+        <div>
+          <div class="card-tier-label">MACHINE INTELLIGENCE</div>
+          <h3 class="card-service-title">Agentic AI Swarms &amp; Vector RAG</h3>
+          <p class="card-service-desc">
+            Autonomous multi-agent architectures that orchestrate specialized LLMs to research, write code, run terminal simulations, and update production databases with verifiable guardrails and continuous memory.
+          </p>
+          <ul class="deliverables-list">
+            <li><span class="bullet">✦</span> Stateful Multi-Agent Orchestration &amp; Memory Trees</li>
+            <li><span class="bullet">✦</span> Real-Time Supabase pgvector Embedding Pipelines</li>
+            <li><span class="bullet">✦</span> Custom Model Context Protocol (MCP) Tool Integrations</li>
+            <li><span class="bullet">✦</span> Streaming Generative UI Controls &amp; Analytics Dashboards</li>
+          </ul>
+        </div>
+        <div class="card-footer-cta">
+          <span style="font-size: 0.74rem; color: #c026d3;">Enterprise Ready</span>
+          <a href="connect.html?service=ai" class="btn-engage">
+            <span>Deploy AI Swarms</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. High-Velocity Web -->
+      <div class="offering-card">
+        <div>
+          <div class="card-tier-label">WEB ARCHITECTURE</div>
+          <h3 class="card-service-title">High-Velocity Digital Ecosystems</h3>
+          <p class="card-service-desc">
+            Custom web applications featuring hardware-accelerated 3D WebGL canvases, 60FPS fluid scroll-scrubbing, and edge-rendered architectures built for maximum performance and conversion.
+          </p>
+          <ul class="deliverables-list">
+            <li><span class="bullet">✦</span> Next.js / TypeScript Modern Architectures</li>
+            <li><span class="bullet">✦</span> Continuous 3D Canvas Scrubbing &amp; Custom WebGL Shaders</li>
+            <li><span class="bullet">✦</span> Real-Time WebSockets State Synchronization</li>
+            <li><span class="bullet">✦</span> 100/100 Core Web Vitals Performance Optimization</li>
+          </ul>
+        </div>
+        <div class="card-footer-cta">
+          <span style="font-size: 0.74rem; color: #4ade80;">Global CDN Deploy</span>
+          <a href="connect.html?service=web" class="btn-engage">
+            <span>Commission Web System</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. Prototype Sprints -->
+      <div class="offering-card">
+        <div>
+          <div class="card-tier-label">DEEP-TECH SPRINTS</div>
+          <h3 class="card-service-title">4-Week End-to-End Prototype Sprints</h3>
+          <p class="card-service-desc">
+            Rapid deep-tech incubation for founders. Go from conceptual sketches to a tested physical prototype or deployed cloud software architecture within 30 days of focused development.
+          </p>
+          <ul class="deliverables-list">
+            <li><span class="bullet">✦</span> Week 1: System Architecture, Telemetry Audit &amp; Parts Sourcing</li>
+            <li><span class="bullet">✦</span> Week 2: Microcontroller Firmware &amp; Backend API Scaffold</li>
+            <li><span class="bullet">✦</span> Week 3: Physical Assembly / Frontend State Machine</li>
+            <li><span class="bullet">✦</span> Week 4: Field Validation Tests, Documentation &amp; IP Handover</li>
+          </ul>
+        </div>
+        <div class="card-footer-cta">
+          <span style="font-size: 0.74rem; color: #f43f5e;">Limited Availability</span>
+          <a href="connect.html?service=sprint" class="btn-engage">
+            <span>Apply for Sprint</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESS FLOW -->
+    <section class="process-section">
+      <div class="page-tag" style="color: #38bdf8;">Engineering Lifecycle</div>
+      <h2 class="page-title" style="font-size: 2.2rem;">How We Collaborate</h2>
+      <p class="page-subtitle">A transparent, telemetry-driven workflow from day one.</p>
+
+      <div class="process-steps-grid">
+        <div class="step-box">
+          <span class="step-num">01</span>
+          <h4 class="step-title">Discovery &amp; Blueprint</h4>
+          <p class="step-desc">We analyze physical constraints, data models, and latency requirements to form an airtight blueprint.</p>
+        </div>
+        <div class="step-box">
+          <span class="step-num">02</span>
+          <h4 class="step-title">Hardware &amp; Code Sprints</h4>
+          <p class="step-desc">Iterative engineering with weekly telemetry checkpoints, live repo pushes, and screen recordings.</p>
+        </div>
+        <div class="step-box">
+          <span class="step-num">03</span>
+          <h4 class="step-title">Rigorous Field Testing</h4>
+          <p class="step-desc">Stress testing flight controls, fail-safes, multi-agent edge inference, and load thresholds.</p>
+        </div>
+        <div class="step-box">
+          <span class="step-num">04</span>
+          <h4 class="step-title">IP Transfer &amp; Launch</h4>
+          <p class="step-desc">100% intellectual property handover, source code repositories, and production deployment.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer-ecosystem">
+    <div class="footer-content">
+      <div class="footer-col-brand">
+        <div class="footer-brand-header">
+          <a href="index.html" class="nav-logo-badge">
+            <span class="nav-monogram">YA</span>
+          </a>
+          <div>
+            <div class="footer-title">YAFI AHMED</div>
+            <div class="footer-motto">Independent Builder &amp; Aerospace Creator</div>
+          </div>
+        </div>
+        <p class="footer-motto">
+          Architecting autonomous drone platforms, agentic AI swarms, and mission-critical web applications.
+        </p>
+        <div class="footer-location-telemetry">
+          <span>●</span>
+          <span>Dhaka, Bangladesh (UTC+6) • Lab Active</span>
+        </div>
+      </div>
+
+      <div class="footer-col-nav">
+        <div class="footer-heading">Ecosystem Directory</div>
+        <ul class="footer-links-list">
+          <li><a href="index.html">✦ Home (Overview)</a></li>
+          <li><a href="about.html">✦ About Yafi</a></li>
+          <li><a href="techstack.html">✦ Tech Stack &amp; Tools</a></li>
+          <li><a href="projects.html">✦ Project Showcase</a></li>
+          <li><a href="offerings.html">✦ Offerings &amp; Services</a></li>
+          <li><a href="connect.html">✦ Connect &amp; Inquiries</a></li>
+          <li><a href="admin.html" style="color: #c084fc;">🔒 Admin Panel (CMS)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col-legal">
+        <div class="footer-heading">Security &amp; Legal</div>
+        <div class="footer-legal-links">
+          <a href="index.html#modal-legal" class="footer-legal-btn">Privacy Policy</a>
+          <span style="color: rgba(255,255,255,0.2);">•</span>
+          <a href="index.html#modal-legal" class="footer-legal-btn">Terms of Service</a>
+        </div>
+        <button class="btn-back-top" onclick="if(window.lenis){window.lenis.scrollTo(0,{duration:1.2})}else{window.scrollTo({top: 0, behavior: 'smooth'});}">
+          <span>&uarr;</span>
+          <span>Back to Top</span>
+        </button>
+        <span class="footer-copy">&copy; 2026 Yafi Ahmed. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      let lastY = window.pageYOffset || 0;
+      const nav = document.querySelector('.navbar-pill-wrapper');
+      window.addEventListener('scroll', () => {
+        const currY = window.pageYOffset || 0;
+        if (currY > lastY && currY > 120) {
+          if (nav) nav.classList.add('nav-hidden');
+        } else {
+          if (nav) nav.classList.remove('nav-hidden');
+        }
+        lastY = currY <= 0 ? 0 : currY;
+      }, { passive: true });
+
+      // Natural Momentum Smooth Scroll (Lenis)
+      if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+          duration: 1.15,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          orientation: 'vertical',
+          gestureOrientation: 'vertical',
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.2,
+          infinite: false
+        });
+        window.lenis = lenis;
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+    })();
+  </script>
+  <!-- Floating Draggable Yafi AI Assistant Widget -->
+  <script src="yafi-ai-widget.js"></script>
+</body>
+</html>
