@@ -46,7 +46,7 @@
       yearsExperience: "4+",
       completedBuilds: "24+",
       flightHours: "1,200+",
-      profileImg: "frames/frame-001.jpg"
+      profileImg: "yafi_avatar.png"
     },
     techStack: [
       // AI & MACHINE LEARNING TOOLS

@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yafi Ahmed — Independent Builder & Creator</title>
+  <link rel="icon" type="image/png" href="yafi_avatar.png" />
+  <link rel="apple-touch-icon" href="yafi_avatar.png" />
 
   <!-- Google Fonts: Bebas Neue, Barlow Condensed, Cinzel, Playfair Display & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -170,23 +172,33 @@
 
     /* Left: Stylized YA Monogram Emblem */
     .nav-logo-badge {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      border: 1.5px solid rgba(168, 85, 247, 0.8);
-      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      border: 1.5px solid rgba(168, 85, 247, 0.85);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(10, 10, 15, 0.6);
       text-decoration: none;
       transition: all 0.3s ease;
+      overflow: hidden;
+      padding: 0;
     }
 
     .nav-logo-badge:hover {
       border-color: rgba(192, 132, 252, 1);
-      box-shadow: 0 0 18px rgba(192, 132, 252, 0.9);
-      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(192, 132, 252, 1);
+      transform: scale(1.08);
+    }
+
+    .nav-logo-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
     }
 
     .nav-monogram {
@@ -971,14 +983,14 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: 40% 28%;
+      object-position: center;
       display: block;
-      transform: scale(1.15);
+      transform: scale(1.0);
       transition: transform 0.4s ease;
     }
 
     .about-circle-ring:hover .about-circle-img {
-      transform: scale(1.2);
+      transform: scale(1.06);
     }
 
     /* Center Bottom Mouse Scroll Cue */
@@ -3510,9 +3522,9 @@
   <!-- FLOATING NAVBAR (MATCHING REFERENCE MOCKUP EXACTLY) -->
   <header class="navbar-pill-wrapper">
     <nav class="navbar-pill">
-      <!-- Left: YA Monogram Emblem -->
-      <a href="#" class="nav-logo-badge" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-        <span class="nav-monogram">YA</span>
+      <!-- Left: Profile Avatar Logo Emblem -->
+      <a href="index.html" class="nav-logo-badge" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;" title="Yafi Ahmed">
+        <img src="yafi_avatar.png" alt="Yafi Ahmed" class="nav-logo-avatar" />
       </a>
 
       <!-- Center: Navigation Tabs -->
@@ -3690,7 +3702,7 @@
         <div class="about-circle-laser"></div>
         <div class="about-circle-ring">
           <div class="about-circle-inner">
-            <img src="frames/frame-001.jpg" alt="Yafi Ahmed" class="about-circle-img" />
+            <img src="yafi_avatar.png" alt="Yafi Ahmed" class="about-circle-img" />
           </div>
         </div>
       </div>
@@ -5015,8 +5027,8 @@
       <!-- Col 1: Brand & Bio -->
       <div class="footer-col-brand">
         <div class="footer-brand-header">
-          <a href="#" class="nav-logo-badge" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-            <span class="nav-monogram">YA</span>
+          <a href="#" class="nav-logo-badge" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;" title="Yafi Ahmed">
+            <img src="yafi_avatar.png" alt="Yafi Ahmed" class="nav-logo-avatar" />
           </a>
           <div>
             <div class="footer-title">YAFI AHMED</div>
@@ -5308,10 +5320,10 @@
         lastRenderedIndex = index;
       }
 
-      // 1. TIER 1: INSTANT KEYFRAMES (Every 3rd frame = 100 keyframes / 3.8MB total)
-      // Loads 100 keyframes across the entire scroll timeline within ~400ms!
-      // This guarantees an active neighbor is NEVER further than 1-2 frames away.
-      const KEYFRAME_INTERVAL = 3;
+      // 1. TIER 1: INSTANT KEYFRAMES (Every 2nd frame = 150 keyframes / 5.5MB total)
+      // Loads 150 keyframes across the entire scroll timeline within ~350ms!
+      // This guarantees an active neighbor is NEVER further than 1 single frame away.
+      const KEYFRAME_INTERVAL = 2;
       loadSingleFrame(0, true);
       for (let i = 0; i < TOTAL_FRAMES; i += KEYFRAME_INTERVAL) {
         loadSingleFrame(i, true);
@@ -5319,9 +5331,9 @@
       loadSingleFrame(TOTAL_FRAMES - 1, true);
 
       // 2. TIER 2: PROXIMITY PRIORITY LOADER
-      // Rapidly loads 12 surrounding frames around current scroll position
+      // Rapidly loads 14 surrounding frames around current scroll position
       function prioritizeAround(currentIndex) {
-        const RANGE = 12;
+        const RANGE = 14;
         const start = Math.max(0, currentIndex - RANGE);
         const end = Math.min(TOTAL_FRAMES - 1, currentIndex + RANGE);
         for (let i = start; i <= end; i++) {
@@ -5370,7 +5382,7 @@
       // Scroll scrubbing logic with snappy response
       let targetProgress = 0;
       let currentProgress = 0;
-      const LERP_FACTOR = 0.55;
+      const LERP_FACTOR = 0.70;
 
       // Stage Elements
       const stageHero = document.getElementById('stage-hero');
@@ -6014,6 +6026,12 @@
         });
 
         window.lenis = lenis;
+
+        lenis.on('scroll', (e) => {
+          if (typeof e.progress === 'number') {
+            targetProgress = e.progress;
+          }
+        });
 
         function raf(time) {
           lenis.raf(time);

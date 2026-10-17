@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>About Yafi Ahmed — Aerospace Creator & Systems Architect</title>
+  <link rel="icon" type="image/png" href="yafi_avatar.png" />
+  <link rel="apple-touch-icon" href="yafi_avatar.png" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -126,17 +128,33 @@
     }
 
     .nav-logo-badge {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      border: 1.5px solid rgba(168, 85, 247, 0.8);
-      box-shadow: 0 0 12px rgba(168, 85, 247, 0.8);
+      border: 1.5px solid rgba(168, 85, 247, 0.85);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(10, 10, 15, 0.6);
       text-decoration: none;
       transition: all 0.3s ease;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .nav-logo-badge:hover {
+      border-color: rgba(192, 132, 252, 1);
+      box-shadow: 0 0 20px rgba(192, 132, 252, 1);
+      transform: scale(1.08);
+    }
+
+    .nav-logo-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
     }
 
     .nav-monogram {
@@ -676,8 +694,8 @@
   <!-- FLOATING NAVBAR -->
   <header class="navbar-pill-wrapper">
     <nav class="navbar-pill">
-      <a href="index.html" class="nav-logo-badge">
-        <span class="nav-monogram">YA</span>
+      <a href="index.html" class="nav-logo-badge" title="Yafi Ahmed">
+        <img src="yafi_avatar.png" alt="Yafi Ahmed" class="nav-logo-avatar" />
       </a>
 
       <ul class="nav-tabs-center">
@@ -711,7 +729,7 @@
       <!-- Left: Profile Telemetry Card -->
       <aside class="profile-card">
         <div class="profile-avatar-wrap">
-          <img src="frames/frame-001.jpg" alt="Yafi Ahmed" class="profile-avatar-img" id="about-avatar" />
+          <img src="yafi_avatar.png" alt="Yafi Ahmed" class="profile-avatar-img" id="about-avatar" />
         </div>
         <h2 class="profile-name">YAFI AHMED</h2>
         <div class="profile-role">Aerospace Software &amp; AI Architect</div>
@@ -843,8 +861,8 @@
     <div class="footer-content">
       <div class="footer-col-brand">
         <div class="footer-brand-header">
-          <a href="index.html" class="nav-logo-badge">
-            <span class="nav-monogram">YA</span>
+          <a href="index.html" class="nav-logo-badge" title="Yafi Ahmed">
+            <img src="yafi_avatar.png" alt="Yafi Ahmed" class="nav-logo-avatar" />
           </a>
           <div>
             <div class="footer-title">YAFI AHMED</div>

@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CMS Admin Console — Yafi Ahmed Portfolio</title>
+  <link rel="icon" type="image/png" href="yafi_avatar.png" />
+  <link rel="apple-touch-icon" href="yafi_avatar.png" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -711,7 +713,7 @@
 
       <div class="cropper-toolbar">
         <span style="font-size: 0.72rem; color: #94a3b8;">Zoom:</span>
-        <input type="range" id="crop-zoom" min="0.5" max="3.5" step="0.05" value="1" />
+        <input type="range" id="crop-zoom" min="0.1" max="4.0" step="0.02" value="1" />
         <button type="button" class="btn-crop-action" id="btn-crop-rotate">↻ 90°</button>
         <button type="button" class="btn-crop-action" id="btn-crop-reset">↺ Reset</button>
       </div>
@@ -1240,8 +1242,16 @@ grant all on all sequences in schema public to anon, authenticated;
       }
 
       function resetCropState() {
+        let initialZoom = 1;
+        if (sourceImage) {
+          const guideSize = cropperMode === '1:1' ? 220 : 340;
+          const maxDim = Math.max(sourceImage.width, sourceImage.height);
+          if (maxDim > guideSize) {
+            initialZoom = Math.max(0.1, Number((guideSize / maxDim).toFixed(2)));
+          }
+        }
         cropState = {
-          zoom: 1,
+          zoom: initialZoom,
           rotation: 0,
           offsetX: 0,
           offsetY: 0,
@@ -1249,7 +1259,7 @@ grant all on all sequences in schema public to anon, authenticated;
           startX: 0,
           startY: 0
         };
-        if (cropZoom) cropZoom.value = 1;
+        if (cropZoom) cropZoom.value = initialZoom;
       }
 
       function drawCropCanvas() {
@@ -1372,7 +1382,8 @@ grant all on all sequences in schema public to anon, authenticated;
           outCtx.scale(cropState.zoom * scale, cropState.zoom * scale);
           outCtx.drawImage(sourceImage, -sourceImage.width / 2, -sourceImage.height / 2);
 
-          const base64Data = outCanvas.toDataURL('image/jpeg', 0.88);
+          const isPng = sourceImage.src && (sourceImage.src.startsWith('data:image/png') || sourceImage.src.endsWith('.png'));
+          const base64Data = outCanvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.92);
           if (cropperTargetId) {
             if (typeof cropperTargetId === 'function') {
               cropperTargetId(base64Data);
