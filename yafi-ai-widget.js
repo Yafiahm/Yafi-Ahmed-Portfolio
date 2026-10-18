@@ -436,6 +436,25 @@ CRITICAL RULES:
       0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
       40% { transform: scale(1.1); opacity: 1; }
     }
+
+    @media (max-width: 600px) {
+      .yafi-ai-bubble {
+        bottom: 18px;
+        right: 18px;
+        width: 50px;
+        height: 50px;
+      }
+      .yafi-chat-drawer {
+        right: 10px;
+        bottom: 78px;
+        left: 10px;
+        width: auto;
+        max-width: none;
+        height: 72vh;
+        max-height: 580px;
+        border-radius: 18px;
+      }
+    }
   `;
   document.head.appendChild(style);
 
