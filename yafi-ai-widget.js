@@ -18,7 +18,7 @@
       subtitle: (ai.botTitle && ai.botTitle !== 'Autonomous Cognitive Systems Agent') ? ai.botTitle : '',
       welcome: ai.welcomeMessage || 'Hello! I am **Yafi AI**, the conversational assistant on Yafi Ahmed\'s portfolio. How can I assist you today?',
       botAvatar: ai.botAvatar || 'yafi_avatar.png',
-      buttonIcon: ai.buttonIcon || ''
+      buttonIcon: ai.buttonIcon || 'ai_orb_icon.jpg'
     };
   }
 
@@ -104,8 +104,24 @@ CRITICAL RULES:
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      width: 30px;
-      height: 30px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+    }
+
+    .yafi-ai-orb-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      transition: transform 0.35s ease;
+      display: block;
+    }
+
+    .yafi-ai-bubble:hover .yafi-ai-orb-inner img {
+      transform: scale(1.12);
     }
 
     .yafi-ai-star-svg {
@@ -429,11 +445,12 @@ CRITICAL RULES:
   orb.id = 'yafi-ai-bubble';
   orb.setAttribute('role', 'button');
   orb.setAttribute('aria-label', 'Chat with Yafi AI');
+  const orbIconSrc = botInfo.buttonIcon || 'ai_orb_icon.jpg';
   orb.innerHTML = `
     <div class="yafi-ai-ring"></div>
     <div class="yafi-ai-orb-inner">
-      ${botInfo.buttonIcon ? `<img src="${botInfo.buttonIcon}" alt="AI" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='block';" />` : ''}
-      <svg viewBox="0 0 24 24" fill="none" class="yafi-ai-star-svg" style="${botInfo.buttonIcon ? 'display:none;' : ''}">
+      <img src="${orbIconSrc}" alt="AI" class="yafi-ai-orb-img" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='block';" />
+      <svg viewBox="0 0 24 24" fill="none" class="yafi-ai-star-svg" style="display:none;">
         <defs>
           <linearGradient id="yafiStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#38bdf8" />
@@ -687,4 +704,22 @@ CRITICAL RULES:
   function escapeHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
+
+  // Live Sync with PortfolioData updates
+  window.addEventListener('yafi_data_updated', function (e) {
+    try {
+      const newD = (e && e.detail) || (window.PortfolioData && window.PortfolioData.data) || {};
+      const newAi = newD.aiSettings || {};
+      const orbImg = orb.querySelector('.yafi-ai-orb-inner img');
+      if (orbImg) {
+        orbImg.src = newAi.buttonIcon || 'ai_orb_icon.jpg';
+        orbImg.style.display = 'block';
+      }
+      const headerAvatar = drawer.querySelector('.yafi-brand-icon-wrap img');
+      if (headerAvatar && newAi.botAvatar) {
+        headerAvatar.src = newAi.botAvatar;
+        headerAvatar.style.display = 'block';
+      }
+    } catch (err) {}
+  });
 })();

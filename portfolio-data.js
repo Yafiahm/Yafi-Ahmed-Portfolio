@@ -186,7 +186,9 @@
       botTitle: "",
       welcomeMessage: "Hello! I am Yafi AI, your conversational assistant. How can I help you today?",
       botAvatar: "yafi_avatar.png",
-      buttonIcon: "",
+      buttonIcon: "ai_orb_icon.jpg",
+      navbarLogo: "yafi_avatar.png",
+      userAvatar: "yafi_avatar.png",
       maxImagesPerUser: 5,
       sessionTimeLimitMinutes: 30, // 0 for unlimited
       allowCodeExecution: true,
@@ -217,6 +219,15 @@
             }
             if (!merged.aiSettings.botAvatar) {
               merged.aiSettings.botAvatar = 'yafi_avatar.png';
+            }
+            if (!merged.aiSettings.buttonIcon) {
+              merged.aiSettings.buttonIcon = 'ai_orb_icon.jpg';
+            }
+            if (!merged.aiSettings.navbarLogo) {
+              merged.aiSettings.navbarLogo = 'yafi_avatar.png';
+            }
+            if (!merged.aiSettings.userAvatar) {
+              merged.aiSettings.userAvatar = 'yafi_avatar.png';
             }
           }
           return merged;

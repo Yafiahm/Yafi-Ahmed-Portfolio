@@ -1094,9 +1094,59 @@ grant all on all sequences in schema public to anon, authenticated;
       <section class="admin-tab-pane" id="tab-ai-studio">
         <div class="panel-header">
           <div>
-            <h2 class="panel-title">Yafi AI — Cognitive Assistant Controls</h2>
-            <p class="panel-subtitle">Configure your custom AI agent persona, image generation limits, and session quotas.</p>
+            <h2 class="panel-title">AI Studio &amp; Assistant Controls</h2>
+            <p class="panel-subtitle">Manage AI Studio page logos, floating home page assistant icon, and cognitive parameters.</p>
           </div>
+        </div>
+
+        <div style="font-size:0.78rem;font-weight:700;color:#c084fc;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(192,132,252,0.2);">
+          🎨 AI Studio Page Logos &amp; Avatars (Independent Controls)
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">AI Studio Top-Left Navbar Logo</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-navbar-logo" placeholder="yafi_avatar.png" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-navbar-logo', '1:1')">📁 Crop (1:1)</button>
+            </div>
+            <span style="font-size: 0.72rem; color: #64748b;">Top-left circular monogram/logo on ai-assistant.html</span>
+          </div>
+          <div>
+            <label class="admin-label">AI Studio Bottom-Left User Avatar</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-user-avatar" placeholder="yafi_avatar.png" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-user-avatar', '1:1')">📁 Crop (1:1)</button>
+            </div>
+            <span style="font-size: 0.72rem; color: #64748b;">Bottom-left user profile card avatar on sidebar footer</span>
+          </div>
+        </div>
+
+        <div style="font-size:0.78rem;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.06em;margin:1.4rem 0 0.75rem 0;padding-bottom:0.4rem;border-bottom:1px solid rgba(56,189,248,0.2);">
+          🚀 Floating AI Assistant Orb (Home Page Corner)
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">Floating Button Orb Icon (Bottom-Right)</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-button-icon" placeholder="ai_orb_icon.jpg" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-button-icon', '1:1')">📁 Crop (1:1)</button>
+            </div>
+            <span style="font-size: 0.72rem; color: #64748b;">Default: ai_orb_icon.jpg (Geometric Diamond Icon)</span>
+          </div>
+          <div>
+            <label class="admin-label">Floating Chatbot Header / Bot Avatar</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-bot-avatar" placeholder="yafi_avatar.png" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-bot-avatar', '1:1')">📁 Crop (1:1)</button>
+            </div>
+            <span style="font-size: 0.72rem; color: #64748b;">Avatar displayed inside the floating drawer header</span>
+          </div>
+        </div>
+
+        <div style="font-size:0.78rem;font-weight:700;color:#f43f5e;text-transform:uppercase;letter-spacing:0.06em;margin:1.4rem 0 0.75rem 0;padding-bottom:0.4rem;border-bottom:1px solid rgba(244,63,94,0.2);">
+          ⚙️ Agent Persona &amp; Operational Quotas
         </div>
 
         <div class="form-group-grid">
@@ -1107,23 +1157,6 @@ grant all on all sequences in schema public to anon, authenticated;
           <div>
             <label class="admin-label">AI Subtitle / Persona (Optional)</label>
             <input type="text" class="admin-input" id="ai-bot-subtitle" placeholder="Leave empty or e.g. Online" />
-          </div>
-        </div>
-
-        <div class="form-group-grid">
-          <div>
-            <label class="admin-label">AI Chatbot Avatar / Logo</label>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <input type="text" class="admin-input" id="ai-bot-avatar" placeholder="yafi_avatar.png" />
-              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-bot-avatar', '1:1')">📁 Crop (1:1)</button>
-            </div>
-          </div>
-          <div>
-            <label class="admin-label">Floating Button Icon / Logo</label>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <input type="text" class="admin-input" id="ai-button-icon" placeholder="Leave empty for Star, or image URL" />
-              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-button-icon', '1:1')">📁 Crop (1:1)</button>
-            </div>
           </div>
         </div>
 
@@ -1530,7 +1563,10 @@ grant all on all sequences in schema public to anon, authenticated;
             </div>
           `;
         } else if (activeTabKey === 'tab-ai-studio') {
-          if (badge) badge.textContent = 'Yafi AI Live Widget';
+          if (badge) badge.textContent = 'AI Studio & Widget';
+          const navLogo = (document.getElementById('ai-navbar-logo') ? document.getElementById('ai-navbar-logo').value : '') || (d.aiSettings && d.aiSettings.navbarLogo) || 'yafi_avatar.png';
+          const userAvatar = (document.getElementById('ai-user-avatar') ? document.getElementById('ai-user-avatar').value : '') || (d.aiSettings && d.aiSettings.userAvatar) || 'yafi_avatar.png';
+          const btnIcon = (document.getElementById('ai-button-icon') ? document.getElementById('ai-button-icon').value : '') || (d.aiSettings && d.aiSettings.buttonIcon) || 'ai_orb_icon.jpg';
           const botName = (document.getElementById('ai-bot-name') ? document.getElementById('ai-bot-name').value : '') || (d.aiSettings && d.aiSettings.botName) || 'Yafi AI';
           const botSub = (document.getElementById('ai-bot-subtitle') ? document.getElementById('ai-bot-subtitle').value : '') || (d.aiSettings && d.aiSettings.botTitle && d.aiSettings.botTitle !== 'Autonomous Cognitive Systems Agent' ? d.aiSettings.botTitle : '') || '';
           const botAvatar = (document.getElementById('ai-bot-avatar') ? document.getElementById('ai-bot-avatar').value : '') || (d.aiSettings && d.aiSettings.botAvatar) || 'yafi_avatar.png';
@@ -1540,20 +1576,42 @@ grant all on all sequences in schema public to anon, authenticated;
 
           frame.innerHTML = `
             <div class="prev-card" style="border-left: 3px solid #c084fc;">
-              <div class="prev-tag">// YAFI AI WIDGET PREVIEW //</div>
-              <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(168,85,247,0.5);">
+              <div class="prev-tag">// AI STUDIO LOGOS PREVIEW //</div>
+              <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 0.6rem; margin-bottom: 0.8rem; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="text-align: center;">
+                  <div style="width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.5); overflow: hidden; margin: 0 auto 0.3rem auto;">
+                    <img src="${navLogo}" alt="Navbar Logo" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='yafi_avatar.png';" />
+                  </div>
+                  <div style="font-size: 0.62rem; color: #c084fc; font-weight: 600;">Top-Left Navbar</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #38bdf8; box-shadow: 0 0 10px rgba(56,189,248,0.5); overflow: hidden; margin: 0 auto 0.3rem auto;">
+                    <img src="${userAvatar}" alt="User Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='yafi_avatar.png';" />
+                  </div>
+                  <div style="font-size: 0.62rem; color: #38bdf8; font-weight: 600;">Bottom-Left User</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #ec4899; box-shadow: 0 0 10px rgba(236,72,153,0.5); overflow: hidden; margin: 0 auto 0.3rem auto;">
+                    <img src="${btnIcon}" alt="Floating Orb" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='ai_orb_icon.jpg';" />
+                  </div>
+                  <div style="font-size: 0.62rem; color: #ec4899; font-weight: 600;">Floating Orb Icon</div>
+                </div>
+              </div>
+
+              <div class="prev-tag">// YAFI AI AGENT //</div>
+              <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem;">
+                <div style="width: 34px; height: 34px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(168,85,247,0.5);">
                   <img src="${botAvatar}" alt="AI" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg, #7c3aed, #e11d48)';this.parentElement.innerHTML='YA';" />
                 </div>
                 <div>
-                  <div style="font-size: 0.92rem; font-weight: 700; color: #ffffff;">${botName}</div>
-                  ${botSub ? `<div style="font-size: 0.68rem; color: #38bdf8;">${botSub}</div>` : ''}
+                  <div style="font-size: 0.88rem; font-weight: 700; color: #ffffff;">${botName}</div>
+                  ${botSub ? `<div style="font-size: 0.66rem; color: #38bdf8;">${botSub}</div>` : ''}
                 </div>
               </div>
-              <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.8rem; font-size: 0.76rem; color: #e2e8f0; line-height: 1.45; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.7rem; font-size: 0.74rem; color: #e2e8f0; line-height: 1.45; border: 1px solid rgba(255,255,255,0.08);">
                 ${msg}
               </div>
-              <div class="prev-stat-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0.8rem;">
+              <div class="prev-stat-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0.7rem;">
                 <div class="prev-stat-box"><div class="prev-stat-num">${maxImg === '0' ? '∞' : maxImg}</div><div class="prev-stat-lbl">Image Quota</div></div>
                 <div class="prev-stat-box"><div class="prev-stat-num">${limit === '0' ? '∞' : limit + 'm'}</div><div class="prev-stat-lbl">Session Time</div></div>
               </div>
@@ -1625,7 +1683,11 @@ grant all on all sequences in schema public to anon, authenticated;
         const botAvatarEl = document.getElementById('ai-bot-avatar');
         if (botAvatarEl) botAvatarEl.value = ai.botAvatar || 'yafi_avatar.png';
         const botIconEl = document.getElementById('ai-button-icon');
-        if (botIconEl) botIconEl.value = ai.buttonIcon || '';
+        if (botIconEl) botIconEl.value = ai.buttonIcon || 'ai_orb_icon.jpg';
+        const aiNavLogoEl = document.getElementById('ai-navbar-logo');
+        if (aiNavLogoEl) aiNavLogoEl.value = ai.navbarLogo || 'yafi_avatar.png';
+        const aiUserAvEl = document.getElementById('ai-user-avatar');
+        if (aiUserAvEl) aiUserAvEl.value = ai.userAvatar || 'yafi_avatar.png';
         const botWelEl = document.getElementById('ai-welcome-msg');
         if (botWelEl) botWelEl.value = ai.welcomeMessage || '';
         const botMaxImgEl = document.getElementById('ai-max-images');
@@ -1879,7 +1941,11 @@ grant all on all sequences in schema public to anon, authenticated;
         const aiAvatar = document.getElementById('ai-bot-avatar');
         if (aiAvatar) d.aiSettings.botAvatar = aiAvatar.value.trim() || 'yafi_avatar.png';
         const aiBtnIcon = document.getElementById('ai-button-icon');
-        if (aiBtnIcon) d.aiSettings.buttonIcon = aiBtnIcon.value.trim();
+        if (aiBtnIcon) d.aiSettings.buttonIcon = aiBtnIcon.value.trim() || 'ai_orb_icon.jpg';
+        const aiNavLogo = document.getElementById('ai-navbar-logo');
+        if (aiNavLogo) d.aiSettings.navbarLogo = aiNavLogo.value.trim() || 'yafi_avatar.png';
+        const aiUserAv = document.getElementById('ai-user-avatar');
+        if (aiUserAv) d.aiSettings.userAvatar = aiUserAv.value.trim() || 'yafi_avatar.png';
         const aiWel = document.getElementById('ai-welcome-msg');
         if (aiWel) d.aiSettings.welcomeMessage = aiWel.value;
         const aiMax = document.getElementById('ai-max-images');

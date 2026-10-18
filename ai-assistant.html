@@ -978,7 +978,7 @@
   <header class="top-global-nav">
     <div class="nav-left-brand">
       <a href="index.html" class="nav-monogram-badge" title="Home">
-        <img src="yafi_avatar.png" alt="Yafi Ahmed" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';" />
+        <img id="ai-nav-logo-img" src="yafi_avatar.png" alt="Yafi Ahmed" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';" />
         <span style="display:none;font-weight:800;font-size:0.85rem;color:#fff;">YA</span>
       </a>
     </div>
@@ -1050,7 +1050,7 @@
       <div class="sidebar-user-footer">
         <div class="user-profile-badge">
           <div class="user-avatar-circle" style="overflow:hidden;padding:0;">
-            <img src="yafi_avatar.png" alt="Yafi Ahmed" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';" />
+            <img id="ai-user-avatar-img" src="yafi_avatar.png" alt="Yafi Ahmed" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='flex';" />
             <span style="display:none;font-weight:800;font-size:0.75rem;color:#fff;">YA</span>
           </div>
           <div class="user-text-wrap">
@@ -1240,15 +1240,33 @@
       let geminiApiKey = localStorage.getItem('yafi_gemini_api_key') || '';
       let watermarkText = localStorage.getItem('yafi_ai_watermark') || 'Created by Gemini Studio — Engineered by Yafi Ahmed';
 
-      // Sync avatar from PortfolioData if present
-      try {
-        const pd = window.PortfolioData && window.PortfolioData.data;
-        const pImg = (pd && pd.about && pd.about.profileImg) || 'yafi_avatar.png';
-        const userAv = document.querySelector('.user-avatar-circle img');
-        if (userAv && pImg) userAv.src = pImg;
-        const navAv = document.querySelector('.nav-monogram-badge img');
-        if (navAv && pImg) navAv.src = pImg;
-      } catch (e) {}
+      // Sync independent logos from PortfolioData (Navbar logo & User avatar)
+      function syncAIStudioLogos() {
+        try {
+          const pd = window.PortfolioData && window.PortfolioData.data;
+          const ai = (pd && pd.aiSettings) || {};
+          
+          // Top-left navbar logo (can be customized independently in admin panel)
+          const navLogoSrc = ai.navbarLogo || 'yafi_avatar.png';
+          const navImg = document.getElementById('ai-nav-logo-img');
+          if (navImg) {
+            navImg.src = navLogoSrc;
+            navImg.style.display = 'block';
+          }
+
+          // Bottom-left user profile avatar (can be customized independently in admin panel)
+          const userAvatarSrc = ai.userAvatar || 'yafi_avatar.png';
+          const userImg = document.getElementById('ai-user-avatar-img');
+          if (userImg) {
+            userImg.src = userAvatarSrc;
+            userImg.style.display = 'block';
+          }
+        } catch (e) {
+          console.warn('AI Studio: logo sync error', e);
+        }
+      }
+      syncAIStudioLogos();
+      window.addEventListener('yafi_data_updated', syncAIStudioLogos);
 
       // Personal Recent Chats Engine (Blank by default, personal to each user)
       function getRecentChats() {
