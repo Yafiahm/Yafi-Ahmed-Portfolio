@@ -2010,8 +2010,8 @@
         justify-content: center;
         gap: 2.5rem;
         height: auto;
-        max-height: 85vh;
-        overflow-y: auto;
+        max-height: none;
+        overflow: visible;
       }
       .about-card-left {
         flex: 1 1 auto;
@@ -3776,7 +3776,7 @@
       .hero-typography-container {
         display: none !important;
       }
-      /* Editorial content neatly placed directly below Yafi's face */
+      /* Editorial content neatly placed directly below Yafi's face: 100% transparent with border only */
       .hero-editorial-left {
         display: flex !important;
         position: absolute !important;
@@ -3786,12 +3786,12 @@
         width: calc(100% - 1.6rem) !important;
         max-width: 430px !important;
         padding: 0.9rem 1.15rem 1rem 1.15rem !important;
-        background: rgba(10, 10, 18, 0.74) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
         border-radius: 20px !important;
-        border: 1px solid rgba(168, 85, 247, 0.28) !important;
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(168, 85, 247, 0.15) !important;
+        border: 1px solid rgba(168, 85, 247, 0.45) !important;
+        box-shadow: 0 0 20px rgba(168, 85, 247, 0.22) !important;
         text-align: center !important;
         align-items: center !important;
         margin: 0 !important;
@@ -3804,6 +3804,7 @@
         display: block !important;
         margin-bottom: 0.2rem !important;
         text-align: center !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 20px rgba(168, 85, 247, 0.4) !important;
       }
       .hero-typed-container {
         font-size: 1.12rem !important;
@@ -3811,13 +3812,15 @@
         margin-bottom: 0.2rem !important;
         justify-content: center !important;
         text-align: center !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95) !important;
       }
       .hero-sub-manifesto {
         font-size: 0.76rem !important;
         line-height: 1.42 !important;
-        color: #94a3b8 !important;
+        color: #cbd5e1 !important;
         text-align: center !important;
         margin: 0.15rem 0 0.8rem 0 !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95) !important;
       }
       .hero-cta-actions {
         display: flex !important;
@@ -3839,31 +3842,53 @@
       .section-about {
         min-height: auto !important;
         height: auto !important;
-        padding: 5.5rem 1rem 3rem 1rem !important;
-        scroll-margin-top: 70px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        padding: 4.8rem 1rem 2.8rem 1rem !important;
+        scroll-margin-top: 60px !important;
+        position: relative !important;
+        overflow: visible !important;
       }
       .about-container {
         flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
         min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        overflow-y: visible !important;
         width: 100% !important;
         padding: 0 !important;
-        gap: 1.2rem !important;
+        gap: 0.75rem !important;
       }
       .about-card-left {
         width: 100% !important;
         max-width: 100% !important;
         align-items: center !important;
         text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
       }
       .about-section-tag {
-        margin: 0 auto 0.75rem auto !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto 0.6rem auto !important;
+        padding: 0.3rem 0.85rem !important;
+        font-size: 0.72rem !important;
       }
       .about-headline {
         display: block !important;
         text-align: center !important;
-        font-size: clamp(1.85rem, 7vw, 2.45rem) !important;
-        line-height: 1.2 !important;
-        margin-bottom: 1rem !important;
+        font-size: clamp(1.6rem, 6.2vw, 2.1rem) !important;
+        line-height: 1.25 !important;
+        margin: 0 0 0.75rem 0 !important;
       }
       .headline-white,
       .headline-gradient {
@@ -3871,27 +3896,50 @@
       }
       .about-bio {
         text-align: center !important;
-        font-size: 0.88rem !important;
-        line-height: 1.55 !important;
+        font-size: 0.82rem !important;
+        line-height: 1.5 !important;
         color: #cbd5e1 !important;
-        margin-bottom: 1.4rem !important;
+        margin: 0 auto 1.1rem auto !important;
+        max-width: 480px !important;
+        padding: 0 0.5rem !important;
       }
       .about-grid {
+        display: grid !important;
         grid-template-columns: 1fr !important;
-        gap: 0.75rem !important;
+        gap: 0.55rem !important;
         width: 100% !important;
+        margin: 0 0 0.8rem 0 !important;
       }
       .about-grid-item {
-        background: rgba(255, 255, 255, 0.03) !important;
+        background: rgba(255, 255, 255, 0.035) !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 14px !important;
-        padding: 0.9rem !important;
+        border-radius: 12px !important;
+        padding: 0.65rem 0.9rem !important;
+        text-align: left !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.22rem !important;
+      }
+      .about-item-title {
+        font-size: 0.74rem !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.45rem !important;
+      }
+      .about-item-desc {
+        font-size: 0.76rem !important;
+        line-height: 1.38 !important;
+        color: #94a3b8 !important;
+        margin: 0 !important;
       }
       .about-footer-motto {
         text-align: center !important;
-        font-size: 0.68rem !important;
-        letter-spacing: 0.1em !important;
-        margin-top: 1.2rem !important;
+        font-size: 0.66rem !important;
+        letter-spacing: 0.08em !important;
+        margin: 0.6rem 0 0 0 !important;
+        color: #64748b !important;
       }
 
       /* 8. TECH STACK & WHAT I CAN BUILD MOBILE */
@@ -6158,8 +6206,9 @@
 
       // Smooth Scroll Helper (works seamlessly with Lenis momentum engine)
       function smoothScrollTo(target) {
+        const offset = window.innerWidth <= 768 ? -55 : 0;
         if (window.lenis) {
-          window.lenis.scrollTo(target, { duration: 1.15 });
+          window.lenis.scrollTo(target, { offset: offset, duration: 1.15 });
         } else if (typeof target === 'number') {
           window.scrollTo({ top: target, behavior: 'smooth' });
         } else if (target && target.scrollIntoView) {
