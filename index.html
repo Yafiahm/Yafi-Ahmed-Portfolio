@@ -516,6 +516,20 @@
       text-shadow: 0 2px 16px rgba(0, 0, 0, 0.95);
     }
 
+    .hero-mobile-name {
+      display: none;
+      font-size: clamp(1.75rem, 6.8vw, 2.3rem);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.1;
+      margin: 0 0 0.35rem 0;
+      letter-spacing: -0.015em;
+      background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+    }
+
     /* Dynamic Running Typewriter Container */
     .hero-typed-container {
       font-family: var(--font-serif);
@@ -793,6 +807,34 @@
 
     .about-card-left::before {
       display: none;
+    }
+
+    /* Section Eyebrow Badge */
+    .about-section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.12);
+      width: fit-content;
+    }
+
+    .about-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
     }
 
     /* Main Editorial Headline */
@@ -3718,63 +3760,76 @@
         display: flex !important;
       }
 
-      /* 6. HERO SECTION MOBILE LAYOUT (FULL FRESH, MINIMALIST & UNCLUTTERED) */
+      /* 6. HERO SECTION MOBILE LAYOUT: Clean 3D view with editorial stack strictly below face */
       .section-hero {
         min-height: 100svh !important;
         height: 100svh !important;
         padding: 0 !important;
-        justify-content: flex-start !important;
+        justify-content: flex-end !important;
         align-items: center !important;
         position: relative !important;
         display: flex !important;
         flex-direction: column !important;
         overflow: hidden !important;
       }
+      /* Hide top typography container on mobile to keep Yafi's face 100% clean and visible */
       .hero-typography-container {
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        width: 100% !important;
-        height: auto !important;
+        display: none !important;
+      }
+      /* Editorial content neatly placed directly below Yafi's face */
+      .hero-editorial-left {
         display: flex !important;
-        flex-direction: column !important;
+        position: absolute !important;
+        bottom: 1.25rem !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 1.6rem) !important;
+        max-width: 430px !important;
+        padding: 0.9rem 1.15rem 1rem 1.15rem !important;
+        background: rgba(10, 10, 18, 0.74) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(168, 85, 247, 0.28) !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(168, 85, 247, 0.15) !important;
+        text-align: center !important;
         align-items: center !important;
-        justify-content: center !important;
-        margin-top: 5.5rem !important;
-        padding: 0 1rem !important;
-        pointer-events: none !important;
-        user-select: none !important;
-        white-space: normal !important;
+        margin: 0 !important;
         z-index: 10 !important;
       }
-      .hero-side-left,
-      .hero-side-right {
-        position: static !important;
-        width: auto !important;
-        top: auto !important;
-        left: auto !important;
-        right: auto !important;
-        transform: none !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
+      .hero-greeting {
+        display: none !important;
+      }
+      .hero-mobile-name {
+        display: block !important;
+        margin-bottom: 0.2rem !important;
+        text-align: center !important;
+      }
+      .hero-typed-container {
+        font-size: 1.12rem !important;
+        min-height: 1.65rem !important;
+        margin-bottom: 0.2rem !important;
         justify-content: center !important;
+        text-align: center !important;
+      }
+      .hero-sub-manifesto {
+        font-size: 0.76rem !important;
+        line-height: 1.42 !important;
+        color: #94a3b8 !important;
+        text-align: center !important;
+        margin: 0.15rem 0 0.8rem 0 !important;
+      }
+      .hero-cta-actions {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
         gap: 0.5rem !important;
       }
-      .hero-word-yafi,
-      .hero-word-ahmed {
-        font-size: clamp(2.8rem, 12vw, 4.2rem) !important;
-        line-height: 0.95 !important;
-        transform: none !important;
-        text-shadow: 0 0 25px rgba(168, 85, 247, 0.6), 0 0 50px rgba(236, 72, 153, 0.35) !important;
-      }
-      .laser-line-h {
-        min-width: 25px !important;
-        max-width: 45px !important;
-      }
-      /* Pure fresh interface on mobile: Hide greeting editorial card and ticker */
-      .hero-editorial-left {
-        display: none !important;
+      .hero-btn-primary,
+      .hero-btn-secondary {
+        padding: 0.52rem 1.1rem !important;
+        font-size: 0.72rem !important;
+        border-radius: 9999px !important;
       }
       .hero-marquee-wrap {
         display: none !important;
@@ -3784,7 +3839,8 @@
       .section-about {
         min-height: auto !important;
         height: auto !important;
-        padding: 3.5rem 1rem 2.5rem 1rem !important;
+        padding: 5.5rem 1rem 3rem 1rem !important;
+        scroll-margin-top: 70px !important;
       }
       .about-container {
         flex-direction: column !important;
@@ -3796,17 +3852,28 @@
       .about-card-left {
         width: 100% !important;
         max-width: 100% !important;
+        align-items: center !important;
+        text-align: center !important;
+      }
+      .about-section-tag {
+        margin: 0 auto 0.75rem auto !important;
       }
       .about-headline {
+        display: block !important;
         text-align: center !important;
-        font-size: clamp(1.75rem, 6.5vw, 2.3rem) !important;
+        font-size: clamp(1.85rem, 7vw, 2.45rem) !important;
+        line-height: 1.2 !important;
+        margin-bottom: 1rem !important;
       }
-      .about-headline span {
+      .headline-white,
+      .headline-gradient {
         display: block !important;
       }
       .about-bio {
         text-align: center !important;
         font-size: 0.88rem !important;
+        line-height: 1.55 !important;
+        color: #cbd5e1 !important;
         margin-bottom: 1.4rem !important;
       }
       .about-grid {
@@ -4092,9 +4159,10 @@
     <!-- LEFT SIDE EDITORIAL: GREETING & RUNNING TYPEWRITER -->
     <div class="hero-editorial-left">
       <div class="hero-greeting">Hi.</div>
+      <h1 class="hero-mobile-name">Yafi Ahmed</h1>
 
       <div class="hero-typed-container">
-        <span class="hero-typed-target" id="hero-typed-target">I am Yafi Ahmed.</span>
+        <span class="hero-typed-target" id="hero-typed-target">I build what comes next.</span>
         <span class="hero-typed-cursor"></span>
       </div>
 
@@ -4164,6 +4232,10 @@
     <div class="about-container">
       <!-- LEFT EDITORIAL CONTENT -->
       <div class="about-card-left">
+        <div class="about-section-tag">
+          <span class="about-tag-dot"></span>
+          <span class="about-tag-text">// 01. ABOUT ME //</span>
+        </div>
         <h2 class="about-headline">
           <span class="headline-white">Curiosity drives me.</span>
           <span class="headline-gradient">Creation defines me.</span>
@@ -5856,11 +5928,11 @@
 
         // Mobile soft dark feather gradient at bottom for seamless transition into About section
         if (cw < 768) {
-          const grad = baseCtx.createLinearGradient(0, ch * 0.74, 0, ch);
+          const grad = baseCtx.createLinearGradient(0, ch * 0.65, 0, ch);
           grad.addColorStop(0, 'rgba(6, 6, 9, 0)');
           grad.addColorStop(1, 'rgba(6, 6, 9, 0.98)');
           baseCtx.fillStyle = grad;
-          baseCtx.fillRect(0, ch * 0.74, cw, ch * 0.26);
+          baseCtx.fillRect(0, ch * 0.65, cw, ch * 0.35);
         }
 
         lastRenderedIndex = index;
