@@ -667,7 +667,7 @@ CRITICAL RULES:
     executeQuery(q);
   }
 
-  // REAL AI CALL TO STREAMING / REAL-TIME ENDPOINT
+  // REAL AI CALL WITH TIMEOUT GUARD AND CONTEXTUAL FAILOVER
   async function executeQuery(text) {
     appendMessage(text, 'user');
     conversationHistory.push({ role: 'user', content: text });
@@ -679,37 +679,87 @@ CRITICAL RULES:
     chatMessages.appendChild(typing);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
+    let aiReply = '';
+
     try {
-      // Call Real AI API (Pollinations open free LLM endpoint)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8500);
+
+      const recentTurns = conversationHistory.slice(1).slice(-5);
+      const messagesToSend = [
+        conversationHistory[0], // system instructions
+        ...recentTurns
+      ];
+
       const res = await fetch('https://text.pollinations.ai/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: conversationHistory,
-          model: 'openai',
-          seed: 42
-        })
+          messages: messagesToSend,
+          model: 'openai-fast',
+          seed: Math.floor(Math.random() * 100000)
+        }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
-      if (!res.ok) throw new Error('Network error');
-      const aiReply = await res.text();
-      typing.remove();
+      if (!res.ok) throw new Error('Network error: ' + res.status);
+      aiReply = await res.text();
+      if (!aiReply || aiReply.trim().length === 0) throw new Error('Empty response');
 
-      conversationHistory.push({ role: 'assistant', content: aiReply });
-      appendMessage(aiReply, 'bot');
     } catch (err) {
-      typing.remove();
-      // Intelligent fallback in Bengali / English
-      const isBangla = /[\u0980-\u09FF]/.test(text) || text.includes('বাংলা');
-      let fallback = '';
-      if (isBangla) {
-        fallback = 'হ্যাঁ, অবশ্যই! আমি বাংলায় কথা বলতে পারি। আমি ইয়াফি আহমেদের পোর্টফোলিও এআই অ্যাসিস্ট্যান্ট। কীভাবে আপনাকে সাহায্য করতে পারি বলুন?';
-      } else {
-        fallback = 'I am here to help you! How can I assist you with Yafi Ahmed\'s projects, aerospace drones, or AI systems today?';
-      }
-      conversationHistory.push({ role: 'assistant', content: fallback });
-      appendMessage(fallback, 'bot');
+      console.warn('Widget AI live stream fallback:', err);
+      aiReply = generateWidgetSmartResponse(text);
     }
+
+    typing.remove();
+    conversationHistory.push({ role: 'assistant', content: aiReply });
+    appendMessage(aiReply, 'bot');
+  }
+
+  function generateWidgetSmartResponse(prompt) {
+    const p = prompt.toLowerCase().trim();
+    const isBangla = /[\u0980-\u09FF]/.test(prompt) || p.includes('bangla') || p.includes('বাংলা');
+
+    if (p.includes('website') || p.includes('web') || p.includes('site') || p.includes('ওয়েবসাইট') || p.includes('বানাতে পার')) {
+      return isBangla
+        ? 'হ্যাঁ, অবশ্যই! আমি যেকোনো ধরনের আধুনিক ও রেসপনসিভ ওয়েবসাইট (পোর্টফোলিও, ড্যাশবোর্ড, ই-কমার্স বা SaaS) তৈরি করতে পারি। আপনি কি ধরনের ওয়েবসাইট তৈরি করতে চান বলুন?'
+        : 'Yes, absolutely! I can build complete, high-performance websites and web applications with modern HTML/CSS/JS, React, and Node.js. What type of website would you like to build?';
+    }
+
+    if (p === 'can u make' || p === 'can you make' || p.includes('what can you do') || p.includes('capabilities')) {
+      return isBangla
+        ? 'আমি ওয়েবসাইট ডেভেলপমেন্ট, কোড রাইটিং ও ডিবাগিং, ড্রোন ও এরোস্পেস ইঞ্জিনিয়ারিং আলোচনা, এবং ইমেজ জেনারেশন করতে পারি। আপনি কী নিয়ে জানতে চান?'
+        : 'I can build full websites, generate and debug code, design autonomous drone architectures, generate AI images, and solve engineering challenges. What would you like to build?';
+    }
+
+    if (p === 'hello' || p === 'hi' || p === 'hey' || p.startsWith('hi ') || p.startsWith('hello ')) {
+      return isBangla
+        ? 'হ্যালো! কেমন আছেন? আমি ইয়াফি আহমেদের এআই সহকারী। কীভাবে আপনাকে সাহায্য করতে পারি বলুন?'
+        : 'Hello! How can I assist you with Yafi Ahmed\'s projects, website development, or drone engineering today?';
+    }
+
+    if (p === 'what?' || p === 'what' || p === 'mane?') {
+      return isBangla
+        ? 'আমি আপনার পূর্বের প্রশ্নের উত্তর দিতে প্রস্তুত! আপনি কি ওয়েবসাইট তৈরি বা অন্য কোনো টেকনিক্যাল বিষয়ে জানতে চাচ্ছিলেন? একটু বিস্তারিত বলুন।'
+        : 'I\'m ready to assist you! Were you asking about building a website, coding, or drone engineering? Tell me more!';
+    }
+
+    if (p.includes('yafi') || p.includes('ইয়াফি')) {
+      return isBangla
+        ? 'ইয়াফি আহমেদ একজন এরোস্পেস রোবটিক্স ইঞ্জিনিয়ার এবং বিল্ডার। তিনি অটোনোমাস ড্রোন সিস্টেম, স্পেসক্র্যাফ্ট কনসেপ্ট এবং Orivino SaaS প্ল্যাটফর্ম তৈরি করেছেন।'
+        : 'Yafi Ahmed is an aerospace robotics engineer and deep-tech builder who creates autonomous drones, spacecraft concepts, and Orivino SaaS.';
+    }
+
+    if (p.includes('drone') || p.includes('ড্রোন')) {
+      return isBangla
+        ? 'ইয়াফি আহমেদের অটোনোমাস ড্রোন সিস্টেমে রয়েছে কার্বন-ফাইবার লাইটওয়েট ফ্রেম, ডিস্ট্রিবিউটেড RTOS এবং অনবোর্ড এজ টেনসর ভিশন ন্যাভিগেশন।'
+        : 'Yafi Ahmed\'s Autonomous Drone System features custom carbon-fiber engineering, distributed RTOS telemetry, and edge tensor neural vision.';
+    }
+
+    return isBangla
+      ? 'আমি আপনার মেসেজটি পেয়েছি। ওয়েবসাইট ডেভেলপমেন্ট, কোডিং বা ইঞ্জিনিয়ারিং বিষয়ক যেকোনো প্রশ্ন আমাকে করতে পারেন!'
+      : 'I understand your request. Feel free to ask me about website development, coding, or engineering, and I will be glad to assist!';
   }
 
   function appendMessage(text, sender) {
