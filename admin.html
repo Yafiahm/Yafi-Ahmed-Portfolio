@@ -1105,8 +1105,25 @@ grant all on all sequences in schema public to anon, authenticated;
             <input type="text" class="admin-input" id="ai-bot-name" placeholder="Yafi AI" />
           </div>
           <div>
-            <label class="admin-label">AI Subtitle / Persona</label>
-            <input type="text" class="admin-input" id="ai-bot-subtitle" placeholder="Autonomous Cognitive Systems Agent" />
+            <label class="admin-label">AI Subtitle / Persona (Optional)</label>
+            <input type="text" class="admin-input" id="ai-bot-subtitle" placeholder="Leave empty or e.g. Online" />
+          </div>
+        </div>
+
+        <div class="form-group-grid">
+          <div>
+            <label class="admin-label">AI Chatbot Avatar / Logo</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-bot-avatar" placeholder="yafi_avatar.png" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-bot-avatar', '1:1')">📁 Crop (1:1)</button>
+            </div>
+          </div>
+          <div>
+            <label class="admin-label">Floating Button Icon / Logo</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="text" class="admin-input" id="ai-button-icon" placeholder="Leave empty for Star, or image URL" />
+              <button type="button" class="btn-device-upload" style="margin-top: 0; white-space: nowrap;" onclick="pickAndCropImage('ai-button-icon', '1:1')">📁 Crop (1:1)</button>
+            </div>
           </div>
         </div>
 
@@ -1515,7 +1532,8 @@ grant all on all sequences in schema public to anon, authenticated;
         } else if (activeTabKey === 'tab-ai-studio') {
           if (badge) badge.textContent = 'Yafi AI Live Widget';
           const botName = (document.getElementById('ai-bot-name') ? document.getElementById('ai-bot-name').value : '') || (d.aiSettings && d.aiSettings.botName) || 'Yafi AI';
-          const botSub = (document.getElementById('ai-bot-subtitle') ? document.getElementById('ai-bot-subtitle').value : '') || (d.aiSettings && d.aiSettings.botTitle) || 'Autonomous Cognitive Systems Agent';
+          const botSub = (document.getElementById('ai-bot-subtitle') ? document.getElementById('ai-bot-subtitle').value : '') || (d.aiSettings && d.aiSettings.botTitle && d.aiSettings.botTitle !== 'Autonomous Cognitive Systems Agent' ? d.aiSettings.botTitle : '') || '';
+          const botAvatar = (document.getElementById('ai-bot-avatar') ? document.getElementById('ai-bot-avatar').value : '') || (d.aiSettings && d.aiSettings.botAvatar) || 'yafi_avatar.png';
           const msg = (document.getElementById('ai-welcome-msg') ? document.getElementById('ai-welcome-msg').value : '') || (d.aiSettings && d.aiSettings.welcomeMessage) || '';
           const maxImg = (document.getElementById('ai-max-images') ? document.getElementById('ai-max-images').value : '') || (d.aiSettings && d.aiSettings.maxImagesPerUser) || '5';
           const limit = (document.getElementById('ai-session-limit') ? document.getElementById('ai-session-limit').value : '') || (d.aiSettings && d.aiSettings.sessionTimeLimitMinutes) || '30';
@@ -1524,10 +1542,12 @@ grant all on all sequences in schema public to anon, authenticated;
             <div class="prev-card" style="border-left: 3px solid #c084fc;">
               <div class="prev-tag">// YAFI AI WIDGET PREVIEW //</div>
               <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #e11d48); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; box-shadow: 0 0 15px rgba(168,85,247,0.5);">YA</div>
+                <div style="width: 38px; height: 38px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(168,85,247,0.5);">
+                  <img src="${botAvatar}" alt="AI" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg, #7c3aed, #e11d48)';this.parentElement.innerHTML='YA';" />
+                </div>
                 <div>
                   <div style="font-size: 0.92rem; font-weight: 700; color: #ffffff;">${botName}</div>
-                  <div style="font-size: 0.68rem; color: #38bdf8;">${botSub}</div>
+                  ${botSub ? `<div style="font-size: 0.68rem; color: #38bdf8;">${botSub}</div>` : ''}
                 </div>
               </div>
               <div style="background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.8rem; font-size: 0.76rem; color: #e2e8f0; line-height: 1.45; border: 1px solid rgba(255,255,255,0.08);">
@@ -1601,7 +1621,11 @@ grant all on all sequences in schema public to anon, authenticated;
         const botNameEl = document.getElementById('ai-bot-name');
         if (botNameEl) botNameEl.value = ai.botName || 'Yafi AI';
         const botSubEl = document.getElementById('ai-bot-subtitle');
-        if (botSubEl) botSubEl.value = ai.botTitle || 'Autonomous Cognitive Systems Agent';
+        if (botSubEl) botSubEl.value = (ai.botTitle && ai.botTitle !== 'Autonomous Cognitive Systems Agent') ? ai.botTitle : '';
+        const botAvatarEl = document.getElementById('ai-bot-avatar');
+        if (botAvatarEl) botAvatarEl.value = ai.botAvatar || 'yafi_avatar.png';
+        const botIconEl = document.getElementById('ai-button-icon');
+        if (botIconEl) botIconEl.value = ai.buttonIcon || '';
         const botWelEl = document.getElementById('ai-welcome-msg');
         if (botWelEl) botWelEl.value = ai.welcomeMessage || '';
         const botMaxImgEl = document.getElementById('ai-max-images');
@@ -1851,7 +1875,11 @@ grant all on all sequences in schema public to anon, authenticated;
         const aiName = document.getElementById('ai-bot-name');
         if (aiName) d.aiSettings.botName = aiName.value.trim() || 'Yafi AI';
         const aiSub = document.getElementById('ai-bot-subtitle');
-        if (aiSub) d.aiSettings.botTitle = aiSub.value.trim() || 'Autonomous Cognitive Systems Agent';
+        if (aiSub) d.aiSettings.botTitle = aiSub.value.trim();
+        const aiAvatar = document.getElementById('ai-bot-avatar');
+        if (aiAvatar) d.aiSettings.botAvatar = aiAvatar.value.trim() || 'yafi_avatar.png';
+        const aiBtnIcon = document.getElementById('ai-button-icon');
+        if (aiBtnIcon) d.aiSettings.buttonIcon = aiBtnIcon.value.trim();
         const aiWel = document.getElementById('ai-welcome-msg');
         if (aiWel) d.aiSettings.welcomeMessage = aiWel.value;
         const aiMax = document.getElementById('ai-max-images');

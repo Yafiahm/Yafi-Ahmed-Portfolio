@@ -15,8 +15,10 @@
     const ai = d.aiSettings || {};
     return {
       name: ai.botName || 'Yafi AI',
-      subtitle: ai.botTitle || 'Autonomous AI Assistant',
-      welcome: 'Assalamu Alaikum! I am **Yafi AI**, the conversational assistant on Yafi Ahmed\'s portfolio.\n\nআমি বাংলা এবং ইংরেজি দুটোতেই সাবলীল। আপনি আমাকে ইয়াফি আহমেদের প্রজেক্ট, ড্রোন, এআই বা যেকোনো সাধারণ বিষয় নিয়ে প্রশ্ন করতে পারেন!'
+      subtitle: (ai.botTitle && ai.botTitle !== 'Autonomous Cognitive Systems Agent') ? ai.botTitle : '',
+      welcome: ai.welcomeMessage || 'Hello! I am **Yafi AI**, the conversational assistant on Yafi Ahmed\'s portfolio. How can I assist you today?',
+      botAvatar: ai.botAvatar || 'yafi_avatar.png',
+      buttonIcon: ai.buttonIcon || ''
     };
   }
 
@@ -29,16 +31,17 @@
       content: `You are Yafi AI, a helpful, polite, and brilliant AI assistant living on Yafi Ahmed's personal portfolio website (Dhaka, Bangladesh).
 You are fluent in both Bengali (বাংলা) and English.
 CRITICAL RULES:
-1. If the user writes in Bengali or asks you to speak in Bengali (e.g. "তুমি বাংলায় কথা বলো", "কেমন আছো?"), ALWAYS reply in natural, friendly, accurate, and fluent Bengali (বাংলা).
-2. If the user writes in English, reply in crisp English.
-3. If the user writes in Banglish, reply warmly in Banglish or Bengali.
-4. You know all about Yafi Ahmed:
+1. GREETING & RELIGION RULE: NEVER use religion-specific greetings such as 'নমস্কার' (Nomoshkar), 'প্রণাম' (Pronam), or 'আদাব' (Adab) unless the user explicitly greets you with that term first. Do NOT assume religion. Start conversations neutrally, politely, and universally (e.g. "হ্যালো! কেমন আছেন?", "Hello! How can I assist you today?").
+2. If the user writes in Bengali or asks you to speak in Bengali (e.g. "তুমি বাংলায় কথা বলো", "কেমন আছো?"), ALWAYS reply in natural, friendly, accurate, and fluent Bengali (বাংলা).
+3. If the user writes in English, reply in crisp English.
+4. If the user writes in Banglish, reply warmly in Banglish or Bengali.
+5. You know all about Yafi Ahmed:
    - Aerospace Robotics Engineer & Autonomous Systems Builder based in Dhaka, Bangladesh.
    - Builds Autonomous Drones (Pixhawk 6X, PX4 RTOS, carbon-fiber composite airframes, Jetson Orin Nano Edge AI vision, 35+ min flight endurance).
    - Conceptualizes Next-Gen Spacecraft (deep-space exploratory cruisers, ion propulsion).
    - Builds Agentic AI Swarms, Orivino SaaS platform, and robotics hardware (Jetson, Raspberry Pi 5, Arduino Giga/Mega, ESP32-S3).
    - Contact: ahmedyafi01@gmail.com, WhatsApp, LinkedIn, GitHub, Fiverr.
-5. In addition to Yafi Ahmed's work, you can answer ANY general questions: programming, math, science, general advice, translation, writing, and creative ideation. Keep responses conversational, concise, and structured.`
+6. In addition to Yafi Ahmed's work, you can answer ANY general questions: programming, math, science, general advice, translation, writing, and creative ideation. Keep responses conversational, concise, and structured.`
     }
   ];
 
@@ -420,7 +423,7 @@ CRITICAL RULES:
   `;
   document.head.appendChild(style);
 
-  // 1. Draggable Floating Orb with professional Gemini 4-Point AI Star Logo
+  // 1. Draggable Floating Orb with configurable logo or Gemini 4-Point AI Star
   const orb = document.createElement('div');
   orb.className = 'yafi-ai-bubble';
   orb.id = 'yafi-ai-bubble';
@@ -429,7 +432,8 @@ CRITICAL RULES:
   orb.innerHTML = `
     <div class="yafi-ai-ring"></div>
     <div class="yafi-ai-orb-inner">
-      <svg viewBox="0 0 24 24" fill="none" class="yafi-ai-star-svg">
+      ${botInfo.buttonIcon ? `<img src="${botInfo.buttonIcon}" alt="AI" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='block';" />` : ''}
+      <svg viewBox="0 0 24 24" fill="none" class="yafi-ai-star-svg" style="${botInfo.buttonIcon ? 'display:none;' : ''}">
         <defs>
           <linearGradient id="yafiStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#38bdf8" />
@@ -451,14 +455,15 @@ CRITICAL RULES:
   drawer.innerHTML = `
     <div class="yafi-drawer-header">
       <div class="yafi-drawer-brand">
-        <div class="yafi-brand-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;">
+        <div class="yafi-brand-icon-wrap" style="overflow:hidden;padding:0;">
+          ${botInfo.botAvatar ? `<img src="${botInfo.botAvatar}" alt="${botInfo.name}" style="width:100%;height:100%;border-radius:9px;object-fit:cover;" onerror="this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='block';" />` : ''}
+          <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;${botInfo.botAvatar ? 'display:none;' : ''}">
             <path d="M12 2C12 7.52 16.48 12 22 12C16.48 12 12 16.48 12 22C12 16.48 7.52 12 2 12C7.52 12 12 7.52 12 2Z" fill="url(#yafiStarGrad)" />
           </svg>
         </div>
         <div class="yafi-drawer-title-wrap">
           <h3>${botInfo.name}</h3>
-          <p><span class="yafi-live-indicator"></span> ${botInfo.subtitle}</p>
+          ${botInfo.subtitle ? `<p><span class="yafi-live-indicator"></span> ${botInfo.subtitle}</p>` : ''}
         </div>
       </div>
       <div class="yafi-drawer-controls">
@@ -471,13 +476,6 @@ CRITICAL RULES:
       <div class="yafi-msg bot" id="yafi-welcome-bubble">
         ${formatMarkdown(botInfo.welcome)}
       </div>
-    </div>
-
-    <div class="yafi-drawer-chips">
-      <button type="button" class="yafi-chip-btn" data-query="তুমি বাংলায় কথা বলো">🇧🇩 বাংলায় কথা বলো</button>
-      <button type="button" class="yafi-chip-btn" data-query="Who is Yafi Ahmed?">👤 Who is Yafi?</button>
-      <button type="button" class="yafi-chip-btn" data-query="Tell me about your Autonomous Drone System">🛸 Drone Specs</button>
-      <button type="button" class="yafi-chip-btn" data-query="How can I contact or hire Yafi Ahmed?">💼 Contact Yafi</button>
     </div>
 
     <div class="yafi-drawer-footer">
@@ -624,12 +622,6 @@ CRITICAL RULES:
     });
   }
 
-  document.querySelectorAll('.yafi-chip-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const q = btn.getAttribute('data-query');
-      if (q) executeQuery(q);
-    });
-  });
 
   function handleSend() {
     if (!input) return;

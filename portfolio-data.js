@@ -183,8 +183,10 @@
     },
     aiSettings: {
       botName: "Yafi AI",
-      botTitle: "Autonomous Cognitive Systems Agent",
-      welcomeMessage: "Hi, I am Yafi AI — an autonomous cognitive assistant created by Yafi Ahmed. How can I assist you with code, aerospace prototypes, or web engineering today?",
+      botTitle: "",
+      welcomeMessage: "Hello! I am Yafi AI, your conversational assistant. How can I help you today?",
+      botAvatar: "yafi_avatar.png",
+      buttonIcon: "",
       maxImagesPerUser: 5,
       sessionTimeLimitMinutes: 30, // 0 for unlimited
       allowCodeExecution: true,
@@ -209,6 +211,13 @@
           }
           if (!merged.aiSettings) {
             merged.aiSettings = JSON.parse(JSON.stringify(defaultData.aiSettings));
+          } else {
+            if (merged.aiSettings.botTitle === 'Autonomous Cognitive Systems Agent') {
+              merged.aiSettings.botTitle = '';
+            }
+            if (!merged.aiSettings.botAvatar) {
+              merged.aiSettings.botAvatar = 'yafi_avatar.png';
+            }
           }
           return merged;
         }
