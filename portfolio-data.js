@@ -81,24 +81,24 @@
     capabilities: [
       {
         id: "cap-1",
-        title: "Autonomous Drone Systems",
-        category: "Hardware & Robotics",
-        desc: "End-to-end custom autonomous aerial vehicles featuring vision-based obstacle avoidance, GPS-denied SLAM navigation, and real-time ground-station telemetry telemetry.",
-        features: ["Custom Flight Controller Firmware (PX4/ArduPilot)", "Edge Object Detection (YOLOv8 + Coral TPU)", "Fail-safe Return-to-Home & Mesh Swarm Relays"]
+        title: "Website",
+        category: "Web Engineering",
+        desc: "Custom modern websites tailored for performance, conversions and sleek branding.",
+        features: ["Portfolio Website", "E-commerce Website", "SaaS Website", "ERP Website", "Business Website", "Landing Page", "Blog and Content Website", "Educational Website", "Booking and Service Website"]
       },
       {
         id: "cap-2",
-        title: "Agentic AI Architectures",
-        category: "Machine Intelligence",
-        desc: "Autonomous multi-agent systems designed for research synthesis, continuous codebase maintenance, workflow orchestration, and generative user interfaces.",
-        features: ["Stateful Agent Memory & Vector RAG (Supabase pgvector)", "Tool-calling MCP Integrations & Sandboxed Runtimes", "Real-time Multi-agent Collaborative Consensus"]
+        title: "Web App",
+        category: "Full-Stack Software",
+        desc: "Interactive, scalable web applications with secure databases and real-time workflows.",
+        features: ["ERP Web App", "SaaS Application", "POS System", "Inventory & Stock Management", "Restaurant Management System", "CRM System", "Admin Dashboard", "AI-powered Web Application"]
       },
       {
         id: "cap-3",
-        title: "High-Performance Web Platforms",
-        category: "Full-Stack Software",
-        desc: "Ultra-fast, interactive web applications featuring 60FPS fluid canvas graphics, zero-latency state synchronization, and scalable cloud architectures.",
-        features: ["Sub-second SSR / Edge Cloud Deployments", "Custom Shader Visuals & Continuous Frame Engines", "PostgreSQL Architectures with Row-Level Security"]
+        title: "Mobile App",
+        category: "Cross-Platform Mobile",
+        desc: "High-performance native and cross-platform mobile apps for iOS and Android.",
+        features: ["Custom Mobile App"]
       }
     ],
     projects: [
@@ -179,7 +179,9 @@
       whatsapp: { handle: "+880 1800 000000", url: "https://wa.me/", active: true },
       discord: { handle: "yafiahmed#0001", url: "https://discord.com", active: true },
       linkedin: { handle: "yafi-ahmed", url: "https://linkedin.com/in/yafi-ahmed", active: true },
-      fiverr: { handle: "@yafi_ahmed", url: "https://fiverr.com", active: true }
+      fiverr: { handle: "@yafi_ahmed", url: "https://fiverr.com", active: true },
+      instagram: { handle: "@yafi_ahmed", url: "https://instagram.com/yafi_ahmed", active: true },
+      facebook: { handle: "yafi.ahmed.official", url: "https://facebook.com/yafi.ahmed.official", active: true }
     },
     aiSettings: {
       botName: "Yafi AI",
@@ -200,6 +202,9 @@
     constructor() {
       this.data = this.loadData();
       this.supabaseConfig = this.loadSupabaseConfig();
+      if (typeof window !== 'undefined') {
+        setTimeout(() => this.autoSyncFromCloud(), 120);
+      }
     }
 
     loadData() {
@@ -240,6 +245,9 @@
 
     saveData(newData) {
       this.data = newData || this.data;
+      if (!this.data._updated_at) {
+        this.data._updated_at = new Date().toISOString();
+      }
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
         window.dispatchEvent(new CustomEvent('yafi_data_updated', { detail: this.data }));
@@ -320,11 +328,17 @@
 
       const cleanUrl = url.replace(/\/+$/, '');
       const endpoint = `${cleanUrl}/rest/v1/${tableName || 'portfolio_content'}`;
+      const nowIso = new Date().toISOString();
+
+      this.data._updated_at = nowIso;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+      } catch (e) {}
 
       const payload = {
         id: 'main',
         data: this.data,
-        updated_at: new Date().toISOString()
+        updated_at: nowIso
       };
 
       const response = await fetch(endpoint, {
@@ -343,6 +357,7 @@
         throw new Error(`Supabase push failed (${response.status}): ${errText}`);
       }
 
+      window.dispatchEvent(new CustomEvent('yafi_data_updated', { detail: this.data }));
       return { success: true, timestamp: payload.updated_at };
     }
 
@@ -374,9 +389,63 @@
         throw new Error('No portfolio data record found in Supabase (id="main"). Push initial data first.');
       }
 
-      const cloudData = rows[0].data;
+      const cloudRow = rows[0];
+      const cloudData = cloudRow.data;
+      if (cloudRow.updated_at) cloudData._updated_at = cloudRow.updated_at;
       this.saveData(cloudData);
       return { success: true, data: cloudData };
+    }
+
+    async autoSyncFromCloud() {
+      try {
+        const { url, anonKey, tableName } = this.supabaseConfig;
+        if (!url || !anonKey) return;
+
+        const cleanUrl = url.replace(/\/+$/, '');
+        const endpoint = `${cleanUrl}/rest/v1/${tableName || 'portfolio_content'}?id=eq.main&select=*`;
+
+        const response = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) return;
+        const rows = await response.json();
+        if (!rows || rows.length === 0 || !rows[0].data) return;
+
+        const cloudRow = rows[0];
+        const cloudData = cloudRow.data;
+        const cloudTime = cloudRow.updated_at || cloudData._updated_at;
+        const localTime = this.data && this.data._updated_at;
+
+        let shouldApply = false;
+        if (!localTime) {
+          shouldApply = true;
+        } else if (cloudTime) {
+          const tCloud = new Date(cloudTime).getTime();
+          const tLocal = new Date(localTime).getTime();
+          if (tCloud >= tLocal) {
+            shouldApply = true;
+          }
+        }
+
+        if (shouldApply) {
+          const merged = Object.assign({}, defaultData, cloudData);
+          merged._updated_at = cloudTime || new Date().toISOString();
+          this.data = merged;
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+          } catch (e) {}
+          window.dispatchEvent(new CustomEvent('yafi_data_updated', { detail: this.data }));
+          console.log('PortfolioData: Cloud content synchronized successfully.');
+        }
+      } catch (err) {
+        console.warn('PortfolioData: Cloud auto-sync check skipped:', err.message);
+      }
     }
   }
 

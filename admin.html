@@ -1793,17 +1793,18 @@ grant all on all sequences in schema public to anon, authenticated;
       function renderSocialsForm() {
         const wrap = document.getElementById('admin-socials-form');
         const s = window.PortfolioData.data.socials || {};
-        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr'];
+        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr', 'instagram', 'facebook'];
         wrap.innerHTML = keys.map(k => {
           const item = s[k] || { handle: '', url: '' };
+          const displayLabel = k === 'x' ? 'X / Twitter' : k;
           return `
             <div class="form-group-grid">
               <div>
-                <label class="admin-label" style="text-transform: capitalize;">${k} Handle</label>
+                <label class="admin-label" style="text-transform: capitalize;">${displayLabel} Handle</label>
                 <input type="text" class="admin-input" id="soc-${k}-handle" value="${item.handle || ''}" />
               </div>
               <div>
-                <label class="admin-label" style="text-transform: capitalize;">${k} URL</label>
+                <label class="admin-label" style="text-transform: capitalize;">${displayLabel} URL</label>
                 <input type="text" class="admin-input" id="soc-${k}-url" value="${item.url || ''}" />
               </div>
             </div>
@@ -1898,8 +1899,8 @@ grant all on all sequences in schema public to anon, authenticated;
         renderFaqList();
       });
 
-      // MASTER SAVE
-      document.getElementById('btn-save-all').addEventListener('click', () => {
+      // MASTER SAVE (Instant LocalStorage + Automatic Supabase Cloud Sync)
+      document.getElementById('btn-save-all').addEventListener('click', async () => {
         const d = window.PortfolioData.data;
 
         // Collect General
@@ -1923,7 +1924,7 @@ grant all on all sequences in schema public to anon, authenticated;
         d.about.profileImg = document.getElementById('a-profileImg').value;
 
         // Collect Socials
-        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr'];
+        const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr', 'instagram', 'facebook'];
         keys.forEach(k => {
           const hEl = document.getElementById(`soc-${k}-handle`);
           const uEl = document.getElementById(`soc-${k}-url`);
@@ -1963,9 +1964,34 @@ grant all on all sequences in schema public to anon, authenticated;
         };
         window.PortfolioData.saveSupabaseConfig(sbConfig);
 
-        // Save LocalStorage
+        // 1. Save LocalStorage immediately (instant client-side responsiveness)
         window.PortfolioData.saveData(d);
-        showToast('All changes saved! Live portfolio updated.');
+
+        // 2. Automatically push to Supabase Cloud Database
+        const btnSave = document.getElementById('btn-save-all');
+        const origText = btnSave.innerHTML;
+        btnSave.disabled = true;
+        btnSave.innerHTML = 'Syncing Cloud...';
+
+        try {
+          await window.PortfolioData.pushToSupabase();
+          showToast('✓ All changes saved and synced to live site & Supabase!');
+          const indicator = document.getElementById('sync-status-indicator');
+          if (indicator) {
+            indicator.textContent = '● Supabase Cloud Synced';
+            indicator.style.color = '#4ade80';
+          }
+          btnSave.innerHTML = 'Saved & Synced ✓';
+        } catch (err) {
+          console.warn('Supabase Push Notification:', err);
+          showToast('✓ Saved locally! (Cloud sync: ' + (err.message || 'offline') + ')');
+          btnSave.innerHTML = 'Saved Locally ✓';
+        }
+
+        setTimeout(() => {
+          btnSave.innerHTML = origText;
+          btnSave.disabled = false;
+        }, 2200);
       });
 
       // Export JSON
