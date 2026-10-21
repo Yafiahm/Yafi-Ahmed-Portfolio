@@ -7682,17 +7682,34 @@
         if (Array.isArray(d.capabilities) && d.capabilities.length > 0) {
           const capStack = document.querySelector('.capabilities-vertical-stack');
           if (capStack) {
+            const capIconMap = {
+              website: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>',
+              webapp: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+              mobileapp: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+              drone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>',
+              ai: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>'
+            };
+            function getIconForCap(title) {
+              const str = (title || '').toLowerCase();
+              if (str.includes('mobile') || (str.includes('app') && !str.includes('web app'))) return capIconMap.mobileapp;
+              if (str.includes('web app') || str.includes('software') || str.includes('saas') || str.includes('system') || str.includes('erp')) return capIconMap.webapp;
+              if (str.includes('drone') || str.includes('robot') || str.includes('hardware') || str.includes('space')) return capIconMap.drone;
+              if (str.includes('ai') || str.includes('agent') || str.includes('neural')) return capIconMap.ai;
+              return capIconMap.website;
+            }
+
             capStack.innerHTML = d.capabilities.map((c, idx) => {
               const feats = Array.isArray(c.features)
                 ? c.features
                 : (typeof c.features === 'string' ? c.features.split(/[,\n]+/).map(s => s.trim()).filter(Boolean) : []);
               const isOpen = idx === 0 ? 'is-open' : '';
+              const iconSvg = getIconForCap(c.title);
               return `
                 <div class="capability-category ${isOpen}" id="cap-dyn-${idx}">
                   <div class="capability-header" role="button" tabindex="0" aria-expanded="${idx === 0 ? 'true' : 'false'}">
                     <div class="capability-title-wrap">
                       <span class="capability-icon-badge">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        ${iconSvg}
                       </span>
                       <span class="capability-title">${c.title}</span>
                     </div>

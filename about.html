@@ -995,6 +995,15 @@
         if (blds && d.about.completedBuilds) blds.textContent = d.about.completedBuilds;
         const hrs = document.getElementById('stat-hours');
         if (hrs && d.about.flightHours) hrs.textContent = d.about.flightHours;
+
+        const avatar = document.getElementById('about-avatar');
+        if (avatar && d.about.profileImg) avatar.src = d.about.profileImg;
+
+        const nameEl = document.querySelector('.profile-name');
+        if (nameEl && d.general && d.general.fullName) nameEl.textContent = d.general.fullName.toUpperCase();
+
+        const roleEl = document.querySelector('.profile-role');
+        if (roleEl && d.general && d.general.roleSubtitle) roleEl.textContent = d.general.roleSubtitle;
       }
       syncAboutData();
       window.addEventListener('yafi_data_updated', syncAboutData);

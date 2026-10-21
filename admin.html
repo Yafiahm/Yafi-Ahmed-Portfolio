@@ -1540,7 +1540,7 @@ grant all on all sequences in schema public to anon, authenticated;
                   <div style="background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
                     <div style="font-size: 0.84rem; font-weight: 700; color: #ffffff;">${c.title}</div>
                     <div style="font-size: 0.72rem; color: #94a3b8; margin: 3px 0;">${c.desc}</div>
-                    <div style="font-size: 0.68rem; color: #38bdf8;">${(c.features || []).join(' • ')}</div>
+                    <div style="font-size: 0.68rem; color: #38bdf8;">${Array.isArray(c.features) ? c.features.join(' • ') : (c.features || '')}</div>
                   </div>
                 `).join('')}
               </div>
@@ -1558,7 +1558,51 @@ grant all on all sequences in schema public to anon, authenticated;
               <div style="font-size: 0.7rem; color: #c084fc; font-weight: 600; margin-bottom: 0.3rem;">${p.category || 'Engineering'}</div>
               <p class="prev-desc">${p.summary || ''}</p>
               <div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem;">
-                ${(p.specs || []).map(s => `<span class="preview-badge" style="font-size: 0.62rem;">${s}</span>`).join('')}
+                ${(Array.isArray(p.specs) ? p.specs : [p.specs || '']).filter(Boolean).map(s => `<span class="preview-badge" style="font-size: 0.62rem;">${s}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-faqs') {
+          if (badge) badge.textContent = 'FAQs (Knowledge Base)';
+          const faqs = d.faqs || [];
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #f59e0b;">
+              <div class="prev-tag">// ACTIVE FAQS (${faqs.length}) //</div>
+              <div style="display: flex; flex-direction: column; gap: 0.55rem; max-height: 380px; overflow-y: auto;">
+                ${faqs.map((f, i) => `
+                  <div style="background: rgba(255,255,255,0.03); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff;">${i + 1}. ${f.q}</div>
+                    <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 3px; line-height: 1.4;">${f.a}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        } else if (activeTabKey === 'tab-socials') {
+          if (badge) badge.textContent = 'Social Channels';
+          const keys = ['github', 'x', 'whatsapp', 'discord', 'linkedin', 'fiverr', 'instagram', 'facebook'];
+          const liveSocials = keys.map(k => {
+            const hEl = document.getElementById(`soc-${k}-handle`);
+            const uEl = document.getElementById(`soc-${k}-url`);
+            const handle = hEl ? hEl.value : ((d.socials && d.socials[k]) ? d.socials[k].handle : '');
+            const url = uEl ? uEl.value : ((d.socials && d.socials[k]) ? d.socials[k].url : '');
+            const displayLabel = k === 'x' ? 'X (Twitter)' : (k.charAt(0).toUpperCase() + k.slice(1));
+            return { key: k, label: displayLabel, handle, url };
+          }).filter(item => item.handle || item.url);
+
+          frame.innerHTML = `
+            <div class="prev-card" style="border-left: 3px solid #10b981;">
+              <div class="prev-tag">// LIVE TRANSMISSION CHANNELS (${liveSocials.length}) //</div>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto;">
+                ${liveSocials.map(s => `
+                  <div style="background: rgba(255,255,255,0.03); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <div style="font-size: 0.8rem; font-weight: 700; color: #ffffff;">${s.label}</div>
+                      <div style="font-size: 0.72rem; color: #a855f7;">${s.handle || '—'}</div>
+                    </div>
+                    <span style="font-size: 0.65rem; color: #10b981; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); padding: 2px 7px; border-radius: 9999px;">Active</span>
+                  </div>
+                `).join('')}
               </div>
             </div>
           `;
@@ -1746,7 +1790,7 @@ grant all on all sequences in schema public to anon, authenticated;
             <div class="item-meta">
               <h4>${c.title}</h4>
               <p><span class="item-tag">${c.category}</span> ${c.desc}</p>
-              <div style="font-size: 0.74rem; color: #cbd5e1; margin-top: 0.3rem;">Features: ${c.features.join(' • ')}</div>
+              <div style="font-size: 0.74rem; color: #cbd5e1; margin-top: 0.3rem;">Features: ${Array.isArray(c.features) ? c.features.join(' • ') : (c.features || '')}</div>
             </div>
             <div class="item-actions">
               <button class="btn-item-action btn-item-del" onclick="deleteCap(${idx})">Delete ✕</button>
@@ -1764,7 +1808,7 @@ grant all on all sequences in schema public to anon, authenticated;
             <div class="item-meta" style="flex: 1;">
               <h4>${p.title}</h4>
               <p><span class="item-tag">${p.category}</span> ${p.summary}</p>
-              <div style="font-size: 0.74rem; color: #a855f7; margin-top: 0.3rem;">Specs: ${(p.specs || []).join(' | ')}</div>
+              <div style="font-size: 0.74rem; color: #a855f7; margin-top: 0.3rem;">Specs: ${Array.isArray(p.specs) ? p.specs.join(' | ') : (p.specs || '')}</div>
             </div>
             <div class="item-actions">
               <button class="btn-item-action" onclick="cropProjectImage(${idx})">📷 Crop Cover</button>
@@ -1816,14 +1860,17 @@ grant all on all sequences in schema public to anon, authenticated;
       window.deleteTech = function (idx) {
         window.PortfolioData.data.techStack.splice(idx, 1);
         renderTechList();
+        updateLivePreview();
       };
       window.deleteCap = function (idx) {
         window.PortfolioData.data.capabilities.splice(idx, 1);
         renderCapList();
+        updateLivePreview();
       };
       window.deleteProject = function (idx) {
         window.PortfolioData.data.projects.splice(idx, 1);
         renderProjectList();
+        updateLivePreview();
       };
       window.cropProjectImage = function (idx) {
         pickAndCropImage((base64Data) => {
@@ -1838,6 +1885,7 @@ grant all on all sequences in schema public to anon, authenticated;
       window.deleteFaq = function (idx) {
         window.PortfolioData.data.faqs.splice(idx, 1);
         renderFaqList();
+        updateLivePreview();
       };
 
       // Add New Tool prompt
@@ -1849,6 +1897,7 @@ grant all on all sequences in schema public to anon, authenticated;
         const url = prompt('Official website URL:', 'https://');
         window.PortfolioData.data.techStack.push({ id: Date.now().toString(), name, category, desc, url });
         renderTechList();
+        updateLivePreview();
       });
 
       // Add New Project prompt
@@ -1871,6 +1920,7 @@ grant all on all sequences in schema public to anon, authenticated;
           details: summary
         });
         renderProjectList();
+        updateLivePreview();
       });
 
       // Add New Capability
@@ -1888,6 +1938,7 @@ grant all on all sequences in schema public to anon, authenticated;
           features: feats.split(',').map(f => f.trim())
         });
         renderCapList();
+        updateLivePreview();
       });
 
       // Add FAQ
@@ -1897,6 +1948,7 @@ grant all on all sequences in schema public to anon, authenticated;
         const a = prompt('Answer:');
         window.PortfolioData.data.faqs.push({ q, a });
         renderFaqList();
+        updateLivePreview();
       });
 
       // MASTER SAVE (Instant LocalStorage + Automatic Supabase Cloud Sync)

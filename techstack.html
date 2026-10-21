@@ -849,7 +849,7 @@
             <h3 class="cap-title">${c.title}</h3>
             <p class="cap-desc">${c.desc}</p>
             <ul class="cap-features-list">
-              ${c.features.map(f => `<li>${f}</li>`).join('')}
+              ${(Array.isArray(c.features) ? c.features : (typeof c.features === 'string' ? c.features.split(/[,\n•]+/).map(s => s.trim()).filter(Boolean) : [])).map(f => `<li>${f}</li>`).join('')}
             </ul>
           </div>
         `).join('');

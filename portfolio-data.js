@@ -216,6 +216,20 @@
           if (Array.isArray(merged.techStack) && merged.techStack.some(t => t.name === 'Python' || t.name === 'C++')) {
             merged.techStack = JSON.parse(JSON.stringify(defaultData.techStack));
           }
+          if (Array.isArray(merged.capabilities)) {
+            merged.capabilities.forEach(c => {
+              if (c && typeof c.features === 'string') {
+                c.features = c.features.split(/[,\n•]+/).map(s => s.trim()).filter(Boolean);
+              }
+            });
+          }
+          if (Array.isArray(merged.projects)) {
+            merged.projects.forEach(p => {
+              if (p && typeof p.specs === 'string') {
+                p.specs = p.specs.split(/[,\n|•]+/).map(s => s.trim()).filter(Boolean);
+              }
+            });
+          }
           if (!merged.aiSettings) {
             merged.aiSettings = JSON.parse(JSON.stringify(defaultData.aiSettings));
           } else {
@@ -390,10 +404,29 @@
       }
 
       const cloudRow = rows[0];
-      const cloudData = cloudRow.data;
+      const cloudData = this.normalizeFields(cloudRow.data);
       if (cloudRow.updated_at) cloudData._updated_at = cloudRow.updated_at;
       this.saveData(cloudData);
       return { success: true, data: cloudData };
+    }
+
+    normalizeFields(dataObj) {
+      if (!dataObj) return dataObj;
+      if (Array.isArray(dataObj.capabilities)) {
+        dataObj.capabilities.forEach(c => {
+          if (c && typeof c.features === 'string') {
+            c.features = c.features.split(/[,\n•]+/).map(s => s.trim()).filter(Boolean);
+          }
+        });
+      }
+      if (Array.isArray(dataObj.projects)) {
+        dataObj.projects.forEach(p => {
+          if (p && typeof p.specs === 'string') {
+            p.specs = p.specs.split(/[,\n|•]+/).map(s => s.trim()).filter(Boolean);
+          }
+        });
+      }
+      return dataObj;
     }
 
     async autoSyncFromCloud() {
@@ -418,7 +451,7 @@
         if (!rows || rows.length === 0 || !rows[0].data) return;
 
         const cloudRow = rows[0];
-        const cloudData = cloudRow.data;
+        const cloudData = this.normalizeFields(cloudRow.data);
         const cloudTime = cloudRow.updated_at || cloudData._updated_at;
         const localTime = this.data && this.data._updated_at;
 
